@@ -41,6 +41,11 @@ func (s * Store) CloseSession() {
     s.session.Close()
 }
 
+func (s * Store) DestroyCollectionAndCloseSession() {
+    s.collection.DropCollection()
+    s.session.Close()
+}
+
 func (s * Store) CreateFrom(post * Post) * Document {
   document := new(Document)
   document.LastUpdated = time.Now().UTC()

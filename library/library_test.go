@@ -8,7 +8,7 @@ func TestInsertAndFind(t * testing.T) {
   var store = new(Store)
 
   store.OpenSession()
-  defer store.CloseSession()
+  defer store.DestroyCollectionAndCloseSession()
 
   post := new(Post)
   post.OwnerId = 69
