@@ -63,6 +63,18 @@ if [ ! -d "/home/vagrant/go" ]; then
   
   echo "" >> /home/vagrant/.bashrc
   echo "export PATH=$PATH:/golang/bin/" >> /home/vagrant/.bashrc
+  
+  echo "" >> /home/vagrant/.bashrc
+  echo "alias fw='cd /golang/src/github.com/garethstokes/fourtyeight/" >> /home/vagrant/.bashrc
+  
+  echo "" >> /home/vagrant/.bashrc
+  echo "PS1='${debian_chroot:+($debian_chroot)}\u:\W\$ '" >> /home/vagrant/.bashrc
+  
+  echo "" >> /home/vagrant/.bashrc
+  cat << 'EOF' >> /home/vagrant/.bashrc
+export MYPS='$(echo -n "${PWD/#$HOME/~}" | awk -F "/" '"'"'{ print $(NF-1) "/" $NF; }'"'"')'
+EOF
+  echo "PS1='${debian_chroot:+($debian_chroot)}\u::$(eval "echo ${MYPS}")$ '" >> /home/vagrant/.bashrc
 fi
 
 chown -R vagrant:vagrant /golang/
