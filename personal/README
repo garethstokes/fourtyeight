@@ -1,0 +1,18 @@
+========================
+{ fourtyeight.personal }
+========================
+
+the place that holds all the relational user information. 
+you can create / lookup users here, also add / remove friends
+to increase your network. 
+
+### schema 
+
+  Person = {
+    date_created: 21312421
+    name: "@garrydanger"
+    email: "garrydanger@gmail.com"
+    avatar_url: "http://s3.amazon.com/dfsd/blee.png"
+    followers: [Person]
+    following: [Person]
+  }
