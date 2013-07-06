@@ -1,0 +1,22 @@
+=======================
+{ fourtyeight.library }
+=======================
+
+a store for all the posts that users make. each document
+contains everything we need to display, the user, timestamp
+post details and comments. 
+
+### schema 
+  
+  Document = {
+    date_created: 342317999
+    last_updated: 347324566 
+    post: Post 
+    comments: [Post]
+  }
+
+  Post = {
+    owner: 1, 
+    image: "http://url.to.image/",
+    text: "a string with about a len ~= 2000"
+  }
