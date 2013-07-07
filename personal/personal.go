@@ -94,7 +94,7 @@ func (s * Personal) InitialiseSchema() {
     s.run( "INSERT INTO db_schema ( date_created ) VALUES ( NOW() );" )
 
     s.log( "Initialising Schema :: creating table user" )
-    s.run( "CREATE TABLE user ( user_id INT PRIMARY KEY , username VARCHAR(255), email VARCHAR(255), avatar_url VARCHAR(255), password VARCHAR(255), salt VARCHAR(255), iterations INT);")
+    s.run( "CREATE TABLE user ( user_id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, iterations INT);")
   }
 }
 
