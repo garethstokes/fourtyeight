@@ -22,6 +22,7 @@ type Document struct {
 type Store struct {
   session * mgo.Session
   collection * mgo.Collection
+  Schema string
 }
 
 func (s * Store) OpenSession() {
@@ -33,8 +34,12 @@ func (s * Store) OpenSession() {
     // Optional. Switch the session to a monotonic behavior.
     session.SetMode(mgo.Monotonic, true)
 
+    if len( s.Schema ) == 0 {
+      s.Schema = "fourtyeight_development"
+    }
+
     s.session = session
-    s.collection = session.DB("fourtyeight_test").C("documents")
+    s.collection = session.DB(s.Schema).C("documents")
 }
 
 func (s * Store) CloseSession() {

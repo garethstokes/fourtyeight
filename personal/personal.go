@@ -24,6 +24,11 @@ type Personal struct {
   Schema string
 }
 
+func Store() * Personal {
+  store := new( Personal )
+  return store
+}
+
 func (s * Personal) OpenSession() {
   //db, err := sql.Open("mysql", "user:password@/dbname")
   if len( s.Schema ) == 0 {
@@ -73,7 +78,24 @@ func (s * Personal) error(message string) {
 }
 
 func (s * Personal) InitialiseSchema() {
-  s.run("CREATE TABLE user ( user_id INT PRIMARY KEY , username VARCHAR(255), email VARCHAR(255), avatar_url VARCHAR(255), password VARCHAR(255), salt VARCHAR(255), iterations INT);")
+  sql := "SELECT table_name FROM information_schema.tables WHERE table_schema = ? AND table_name = 'schema';"
+
+  result, err := s.db.Exec( sql, s.Schema )
+  if err != nil {
+    panic( err.Error() )
+  }
+
+  rows, _ := result.RowsAffected()
+  fmt.Printf( "number of rows: %d\n", rows )
+
+  if rows == 0 {
+    s.logf( "Initialising Schema :: %s", s.Schema )
+    s.run( "CREATE TABLE db_schema ( date_created TIMESTAMP );" )
+    s.run( "INSERT INTO db_schema ( date_created ) VALUES ( NOW() );" )
+
+    s.log( "Initialising Schema :: creating table user" )
+    s.run( "CREATE TABLE user ( user_id INT PRIMARY KEY , username VARCHAR(255), email VARCHAR(255), avatar_url VARCHAR(255), password VARCHAR(255), salt VARCHAR(255), iterations INT);")
+  }
 }
 
 func (s * Personal) DropSchema() {

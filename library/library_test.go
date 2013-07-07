@@ -6,6 +6,7 @@ import (
 
 func TestInsertAndFind(t * testing.T) {
   var store = new(Store)
+  store.Schema = "fourtyeight_test"
 
   store.OpenSession()
   defer store.DestroyCollectionAndCloseSession()
