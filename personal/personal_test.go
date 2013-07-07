@@ -34,9 +34,9 @@ func TestInsertAndFind(t * testing.T) {
 
   person, error = store.Validate( person.Username, password )
   if error != nil {
-    fmt.Printf( 
-      "Incorrect Password ( %s, %s )\n", 
-      person.Username, 
+    fmt.Printf(
+      "Incorrect Password ( %s, %s )\n",
+      person.Username,
       password)
 
     t.Fail()
