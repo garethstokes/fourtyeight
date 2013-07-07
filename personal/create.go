@@ -2,10 +2,11 @@ package personal
 
 import (
   "github.com/garethstokes/fourtyeight/passwords"
+  "time"
 )
 
 func (s * Personal) Create( person * Person, password string ) (* Person, error) {
-  sql := "INSERT INTO user ( username, email, avatar_url, password, salt, iterations ) VALUES ( ?, ?, ?, ?, ?, ? );"
+  sql := "INSERT INTO user ( username, email, avatar_url, password, salt, iterations, date_created ) VALUES ( ?, ?, ?, ?, ?, ?, ? );"
   statement, error := s.db.Prepare( sql )
   if error != nil {
     panic( error )
@@ -27,7 +28,8 @@ func (s * Personal) Create( person * Person, password string ) (* Person, error)
     person.AvatarUrl,
     auth.Password,
     auth.Salt,
-    auth.Iterations)
+    auth.Iterations, 
+    time.Now())
 
   if error != nil {
     s.error( error.Error() )

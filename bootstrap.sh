@@ -22,6 +22,11 @@ if [ ! -f "/usr/bin/hg" ]; then
   apt-get install -y mercurial
 fi
 
+# curl
+if [ ! -f "/usr/bin/curl" ]; then
+  apt-get install -y curl
+fi
+
 # nginx
 if [ ! -f "/usr/sbin/nginx" ]; then
   apt-get install -y nginx

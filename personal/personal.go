@@ -35,7 +35,7 @@ func (s * Personal) OpenSession() {
     s.Schema = "fourtyeight_development"
   }
 
-  connectionString := fmt.Sprintf( "root@/%s", s.Schema )
+  connectionString := fmt.Sprintf( "root@/%s?parseTime=true", s.Schema )
   db, err := sql.Open("mysql", connectionString )
   if err != nil {
     s.error( err.Error() )
@@ -94,7 +94,7 @@ func (s * Personal) InitialiseSchema() {
     s.run( "INSERT INTO db_schema ( date_created ) VALUES ( NOW() );" )
 
     s.log( "Initialising Schema :: creating table user" )
-    s.run( "CREATE TABLE user ( user_id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, iterations INT);")
+    s.run( "CREATE TABLE user ( user_id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, iterations INT, date_created DATETIME NOT NULL);")
   }
 }
 

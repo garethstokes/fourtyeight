@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/garethstokes/web"
 	"github.com/garethstokes/fourtyeight/personal"
+  "fmt"
 )
 
 func RegisterRoutes() {
@@ -12,16 +13,18 @@ func RegisterRoutes() {
 		ctx.Write(toJson( "let thy object decend as if it were calescent" ));
   })
 
-  web.Get("/users/([A-Za-z0-9]+)", func(ctx * web.Context, val string) {
-    personal := personal.Store()
-    defer personal.CloseSession()
+  web.Get("/user/([A-Za-z0-9]+)", func(ctx * web.Context, val string) {
+    p:= personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
 
-    person, error := personal.FindByName( val )
+    name := fmt.Sprintf( "@%s", val )
+    person, error := p.FindByName( name )
     if error != nil {
       apiError( ctx, error.Error() )
       return
     }
 
-    return ctx.Write( tojson( person ) )
+    ctx.Write(toJson( person ))
   })
 }

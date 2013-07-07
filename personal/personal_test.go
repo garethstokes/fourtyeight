@@ -27,7 +27,7 @@ func TestInsertAndFind(t * testing.T) {
     t.Fail()
   }
 
-  person, error = store.FindByUsername( "@garrydanger" )
+  person, error = store.FindByName( "@garrydanger" )
   if error != nil {
     t.Fail()
   }

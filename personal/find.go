@@ -2,16 +2,20 @@ package personal
 
 import (
   "fmt"
+  "time"
 )
 
 var (
-  db_columns = "user_id, username, email, avatar_url"
+  db_columns = "user_id, username, email, avatar_url, date_created"
   db_predicate = fmt.Sprintf( "username = ? limit 1" )
 )
 
-func (s * Personal) FindByUsername( name string ) (* Person, error) {
+func (s * Personal) FindByName( name string ) (* Person, error) {
   var user_id int
   var username, email, avatar_url string
+  var date_created time.Time
+
+  s.logf( "personal.FindByName :: %s", name )
 
   sql := fmt.Sprintf(
     "SELECT %s FROM user WHERE %s",
@@ -19,7 +23,7 @@ func (s * Personal) FindByUsername( name string ) (* Person, error) {
     db_predicate)
 
   row := s.db.QueryRow( sql, name )
-  error := row.Scan( &user_id, &username, &email, &avatar_url )
+  error := row.Scan( &user_id, &username, &email, &avatar_url, &date_created )
 
   if error != nil {
     s.error( error.Error() )
@@ -31,6 +35,7 @@ func (s * Personal) FindByUsername( name string ) (* Person, error) {
   person.Username = username
   person.Email = email
   person.AvatarUrl = avatar_url
+  person.DateCreated = date_created
 
   return person, nil
 }

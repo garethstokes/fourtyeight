@@ -25,7 +25,7 @@ func (s * Personal) Validate( username string, password string ) (* Person, erro
   var iterations int
   var hash, salt string
 
-  person, error := s.FindByUsername( username )
+  person, error := s.FindByName( username )
   if error != nil {
     return nil, error
   }
