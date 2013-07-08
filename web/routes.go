@@ -44,8 +44,8 @@ func RegisterRoutes() {
   // will return a session token that the front end can use
   // to access the rest of the api
   type loginParams struct {
-    name string
-    password string
+    Name string
+    Password string
   }
 
   web.Post("/user/login", func(ctx * web.Context) {
@@ -63,14 +63,14 @@ func RegisterRoutes() {
     p.OpenSession()
     defer p.CloseSession()
 
-    name := fmt.Sprintf( "@%s", params.name )
-    user, error := p.Validate( name, params.password )
+    name := fmt.Sprintf( "@%s", params.Name )
+    user, error := p.Validate( name, params.Password )
     if error != nil {
       apiError( ctx, error.Error() )
       return
     }
 
-    hash := passwords.Compute( name + params.password )
+    hash := passwords.Compute( name + params.Password )
 
     cache.Set( hash.Hash, user )
 
@@ -78,5 +78,17 @@ func RegisterRoutes() {
       "token": hash.Hash,
       "user": user,
     })))
+
+    web.Get("/me/(.+)", func(ctx * web.Context, token string) {
+      ctx.SetHeader("Content-Type", "application/json", true);
+
+      user := cache.Get( token )
+      if user == nil {
+        apiError( ctx, "Invalid token" )
+        return
+      }
+
+      ctx.Write(toJson(apiOk( user )))
+    })
   })
 }
