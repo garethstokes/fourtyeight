@@ -2,4 +2,9 @@
 = login
 curl -XPOST localhost:8080/user/login -H "Content-Type: application/json" -d '{ "name":"garrydanger", "password":"bobafett" }'
 
-= create post
+= get user
+curl localhost:8080/user/{name}
+# for example, localhost:8080/user/garrydanger
+
+= list postings
+curl localhost:8080/library/{token}
