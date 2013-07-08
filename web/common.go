@@ -7,8 +7,8 @@ import (
 )
 
 type ApiResponse struct {
-	Ok bool
-	Result interface{}
+	Ok bool `json:"ok"`
+	Result interface{} `json:"result"`
 }
 
 func apiError(ctx * web.Context, message string) {

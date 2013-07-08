@@ -4,19 +4,20 @@ import (
   "labix.org/v2/mgo"
   "labix.org/v2/mgo/bson"
   "time"
+  "fmt"
 )
 
 type Post struct {
-  OwnerId string
-  Image string
-  Text string
-  Timestamp time.Time
+  OwnerId string `json:"ownerId"`
+  Image string `json:"imageUrl"`
+  Text string `json:"text"`
+  DateCreated time.Time `json:"dateCreated"`
 }
 
 type Document struct {
-  LastUpdated time.Time
-  MainPost * Post
-  Comments []Post
+  LastUpdated time.Time `json:"lastUpdated"`
+  MainPost * Post `json:"mainPost"`
+  Comments []Post `json:"comments"`
 }
 
 type Library struct {
@@ -31,6 +32,8 @@ func Store() * Library {
 }
 
 func (s * Library) OpenSession() {
+  fmt.Print( "Library.OpenSession\n" )
+
     session, err := mgo.Dial("localhost")
     if err != nil {
         panic(err)
@@ -48,15 +51,19 @@ func (s * Library) OpenSession() {
 }
 
 func (s * Library) CloseSession() {
-    s.session.Close()
+  fmt.Print( "Library.CloseSession\n" )
+  s.session.Close()
 }
 
 func (s * Library) DestroyCollectionAndCloseSession() {
-    s.collection.DropCollection()
-    s.session.Close()
+  fmt.Print( "Library.DestroyCollectionAndCloseSession\n" )
+  s.collection.DropCollection()
+  s.session.Close()
 }
 
 func (s * Library) CreateFrom(post * Post) * Document {
+  fmt.Printf( "Library.CreateFrom :: %@\n", post )
+
   document := new(Document)
   document.LastUpdated = time.Now().UTC()
   document.MainPost = post
