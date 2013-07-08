@@ -43,12 +43,14 @@ server {
   location / {
     proxy_pass http://127.0.0.1:8080;
     proxy_redirect  off;
-    proxy_set_header   Host             $host;
-    proxy_set_header   X-Real-IP        $remote_addr;
-    proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+    proxy_set_header   Host             \$host;
+    proxy_set_header   X-Real-IP        \$remote_addr;
+    proxy_set_header   X-Forwarded-For  \$proxy_add_x_forwarded_for;
   }
 }
 EOF
+
+  service nginx restart
 fi
 
 # monogodb
@@ -89,16 +91,7 @@ if [ ! -d "/home/vagrant/go" ]; then
   echo "export PATH=$PATH:/golang/bin/" >> /home/vagrant/.bashrc
   
   echo "" >> /home/vagrant/.bashrc
-  echo "alias fw='cd /golang/src/github.com/garethstokes/fourtyeight/" >> /home/vagrant/.bashrc
-  
-  echo "" >> /home/vagrant/.bashrc
-  echo "PS1='${debian_chroot:+($debian_chroot)}\u:\W\$ '" >> /home/vagrant/.bashrc
-  
-  echo "" >> /home/vagrant/.bashrc
-  cat << 'EOF' >> /home/vagrant/.bashrc
-export MYPS='$(echo -n "${PWD/#$HOME/~}" | awk -F "/" '"'"'{ print $(NF-1) "/" $NF; }'"'"')'
-EOF
-  echo "PS1='${debian_chroot:+($debian_chroot)}\u::$(eval "echo ${MYPS}")$ '" >> /home/vagrant/.bashrc
+  echo "alias fw='cd /golang/src/github.com/garethstokes/fourtyeight/'" >> /home/vagrant/.bashrc
 fi
 
 chown -R vagrant:vagrant /golang/

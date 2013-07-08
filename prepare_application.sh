@@ -7,8 +7,11 @@ EOF
 mysql -u root < createdb.sql
 rm createdb.sql
 
-echo "creating schemas"
+echo "fetching libraries"
 cd migrations
+go get -v
+
+echo "creating schemas"
 go run create_schema.go
 
 echo "seeding databases"
