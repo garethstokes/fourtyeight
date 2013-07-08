@@ -33,7 +33,7 @@ func RegisterRoutes() {
       return
     }
 
-    ctx.Write(toJson( person ))
+    ctx.Write(toJson(apiOk( person )))
   })
 
   // POST Validate user creds

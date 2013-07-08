@@ -5,12 +5,14 @@ import _ "github.com/go-sql-driver/mysql"
 import "time"
 import "fmt"
 
+// the backticks are field tags that let
+// the json parser know what to name the fields
 type Person struct {
   id int
-  Username string
-  Email string
-  AvatarUrl string
-  DateCreated time.Time
+  Username string `json:"name"`
+  Email string `json:"email"`
+  AvatarUrl string `json:"avatarUrl"`
+  DateCreated time.Time `json:"dateCreated"`
 }
 
 type PersonAuthorisation struct {
