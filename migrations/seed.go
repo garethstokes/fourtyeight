@@ -29,6 +29,20 @@ func main() {
 
   fmt.Printf( "Creating user, garry... SUCCESS\n" )
 
+  nick := new( personal.Person )
+  nick.Username = "@shredder"
+  nick.Email = "shredder@gmail.com"
+  nick.AvatarUrl = "https://si0.twimg.com/profile_images/1434628104/zzzz-_3_.png"
+
+  _, error = p.Create( nick, "bobafett" )
+  if error != nil {
+    fmt.Printf( "Creating user, nick... ERROR\n" )
+    fmt.Printf( "%s\n", error )
+    return
+  }
+
+  fmt.Printf( "Creating user, nick... SUCCESS\n" )
+
   fmt.Printf( "Seeding library :: %s\n", schema )
 
   l := library.Store()
