@@ -7,7 +7,7 @@ import (
 )
 
 type Post struct {
-  OwnerId uint64
+  OwnerId string
   Image string
   Text string
   Timestamp time.Time
@@ -19,13 +19,18 @@ type Document struct {
   Comments []Post
 }
 
-type Store struct {
+type Library struct {
   session * mgo.Session
   collection * mgo.Collection
   Schema string
 }
 
-func (s * Store) OpenSession() {
+func Store() * Library {
+  store := new( Library )
+  return store
+}
+
+func (s * Library) OpenSession() {
     session, err := mgo.Dial("localhost")
     if err != nil {
         panic(err)
@@ -42,16 +47,16 @@ func (s * Store) OpenSession() {
     s.collection = session.DB(s.Schema).C("documents")
 }
 
-func (s * Store) CloseSession() {
+func (s * Library) CloseSession() {
     s.session.Close()
 }
 
-func (s * Store) DestroyCollectionAndCloseSession() {
+func (s * Library) DestroyCollectionAndCloseSession() {
     s.collection.DropCollection()
     s.session.Close()
 }
 
-func (s * Store) CreateFrom(post * Post) * Document {
+func (s * Library) CreateFrom(post * Post) * Document {
   document := new(Document)
   document.LastUpdated = time.Now().UTC()
   document.MainPost = post
@@ -65,11 +70,23 @@ func (s * Store) CreateFrom(post * Post) * Document {
   return document
 }
 
-func (s * Store) FindDocumentsFor(userId uint64) []Document {
+func (s * Library) FindDocumentsFor(userId string) []Document {
 
     var result = make([]Document, 100)
 
     err := s.collection.Find(bson.M{"mainpost.ownerid": userId}).All(&result)
+    if err != nil {
+        panic(err)
+    }
+
+    return result
+}
+
+func (s * Library) FindAllFor(userId string) []Document {
+
+    var result = make([]Document, 100)
+
+    err := s.collection.Find(bson.M{}).All(&result)
     if err != nil {
         panic(err)
     }

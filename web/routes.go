@@ -4,6 +4,7 @@ import (
   "fmt"
 	"encoding/json"
 	"github.com/garethstokes/web"
+	"github.com/garethstokes/fourtyeight/library"
 	"github.com/garethstokes/fourtyeight/personal"
 	"github.com/garethstokes/fourtyeight/cache"
 	"github.com/garethstokes/fourtyeight/passwords"
@@ -78,17 +79,37 @@ func RegisterRoutes() {
       "token": hash.Hash,
       "user": user,
     })))
-
-    web.Get("/me/(.+)", func(ctx * web.Context, token string) {
-      ctx.SetHeader("Content-Type", "application/json", true);
-
-      user := cache.Get( token )
-      if user == nil {
-        apiError( ctx, "Invalid token" )
-        return
-      }
-
-      ctx.Write(toJson(apiOk( user )))
-    })
   })
+
+  web.Get("/me/(.+)", func(ctx * web.Context, token string) {
+    ctx.SetHeader("Content-Type", "application/json", true);
+
+    user := cache.Get( token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    ctx.Write(toJson(apiOk( user )))
+  })
+
+  web.Get("/library/(.+)", func(ctx * web.Context, token string) {
+    ctx.SetHeader("Content-Type", "application/json", true);
+
+    l := library.Store()
+    l.OpenSession()
+    defer l.CloseSession()
+
+    user := cache.Get( token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    posts := l.FindAllFor( token )
+
+    ctx.Write(toJson(apiOk( posts )))
+  })
+
+
 }
