@@ -5,7 +5,10 @@ import (
 )
 
 func main() {
-  RegisterRoutes();
+  RegisterRoutes()
+
+  PersonalController()
+  LibraryController()
 
   web.Run("0.0.0.0:8080")
 }

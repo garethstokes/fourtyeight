@@ -6,5 +6,25 @@ curl -XPOST localhost:8080/user/login -H "Content-Type: application/json" -d '{ 
 curl localhost:8080/user/{name}
 # for example, localhost:8080/user/garrydanger
 
-= list postings
+= list documents
 curl localhost:8080/library/{token}
+
+= create document
+curl -XPOST localhost:8080/library/e51n4EZvN8KL7uoQUtmbWw==/document \
+  -H "Content-Type: application/json" \
+  -d '{ "imageUrl": "http://i.imgur.com/1dxWiPF.jpg", "text": "the iron throne" }'
+
+  returns
+    {
+      "ok":true,
+      "result":{
+        "lastUpdated":"2013-07-09T13:23:53.714103269Z",
+        "mainPost":{
+          "ownerId":"@garrydanger",
+          "imageUrl":"http://i.imgur.com/1dxWiPF.jpg",
+          "text":"the iron throne",
+          "dateCreated":"2013-07-09T13:23:53.712520121Z"
+        },
+        "comments":[]
+      }
+    }
