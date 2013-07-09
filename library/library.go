@@ -15,6 +15,7 @@ type Post struct {
 }
 
 type Document struct {
+  Key interface{} `json:"key"`
   LastUpdated time.Time `json:"lastUpdated"`
   MainPost * Post `json:"mainPost"`
   Comments []Post `json:"comments"`
@@ -65,6 +66,7 @@ func (s * Library) CreateFrom(post * Post) * Document {
   fmt.Printf( "Library.CreateFrom :: %@\n", post )
 
   document := new(Document)
+  document.Key = bson.NewObjectId()
   document.LastUpdated = time.Now().UTC()
   document.MainPost = post
   document.Comments = make([]Post, 0)
@@ -72,6 +74,44 @@ func (s * Library) CreateFrom(post * Post) * Document {
   err := s.collection.Insert(document)
   if err != nil {
     panic(err)
+  }
+
+  return document
+}
+
+func (s * Library) AddPost(post * Post, documentKey string) * Document {
+  fmt.Printf( "Library.AddPost :: to document, %s\n", documentKey )
+
+  if bson.IsObjectIdHex(documentKey) == false {
+    return nil
+  }
+
+  key := bson.ObjectIdHex( documentKey )
+
+  document := new( Document )
+  err :=s.collection.Find(bson.M{"key": key}).One( &document )
+  if err == nil {
+    document.Comments = append( document.Comments, *post )
+    s.collection.Update( bson.M{"key": key}, document )
+  } else {
+    fmt.Printf( "ERROR: %s\n", err.Error() )
+  }
+
+  return document
+}
+
+func (s * Library) FindOne( id string ) * Document {
+  fmt.Printf( "Library.FindOne :: %s\n", id )
+
+  if bson.IsObjectIdHex(id) == false {
+    return nil
+  }
+
+  document := new( Document )
+  err :=s.collection.Find(bson.M{"key": bson.ObjectIdHex(id)}).One( &document )
+  if err != nil {
+    fmt.Printf( "ERROR: %s\n", err.Error() )
+    return nil
   }
 
   return document

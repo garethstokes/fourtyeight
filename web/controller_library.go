@@ -64,4 +64,49 @@ func LibraryController() {
 
     ctx.Write(toJson(apiOk( document )))
   })
+
+  web.Get("/document/(.+)", func(ctx * web.Context, documentId string) {
+    ctx.SetHeader("Content-Type", "application/json", true)
+
+    l := library.Store()
+    l.OpenSession()
+    defer l.CloseSession()
+
+    document := l.FindOne( documentId )
+    if document == nil {
+      apiError( ctx, "Incorrect document id" )
+      return
+    }
+
+    ctx.Write(toJson(apiOk( document )))
+
+  })
+
+  web.Post("/library/(.+)/document/(.+)/post", func(ctx * web.Context, token string, documentId string) {
+    ctx.SetHeader("Content-Type", "application/json", true)
+
+    user := cache.Get( token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    post := new( library.Post )
+    err := json.NewDecoder(ctx.Request.Body).Decode(&post)
+    if err != nil {
+			apiError(ctx, "incorrect parameters found")
+      fmt.Printf( "ERROR: %s\n", err.Error() )
+			return
+    }
+
+    post.OwnerId = user.(* personal.Person).Username
+
+    l := library.Store()
+    l.OpenSession()
+    defer l.CloseSession()
+
+    document := l.AddPost( post, documentId )
+
+    ctx.Write(toJson(apiOk( document )))
+  })
 }
