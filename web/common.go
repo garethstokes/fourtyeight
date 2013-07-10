@@ -19,6 +19,10 @@ func apiError(ctx * web.Context, message string) {
 	ctx.Write(toJson(response));
 }
 
+func ok(ctx * web.Context, result interface{}) {
+  ctx.Write(toJson(apiOk( result )))
+}
+
 func apiOk(result interface{}) (ApiResponse) {
 	return ApiResponse {
 		Ok: true,

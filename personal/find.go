@@ -3,6 +3,7 @@ package personal
 import (
   "fmt"
   "time"
+  "database/sql"
 )
 
 var (
@@ -11,9 +12,14 @@ var (
 )
 
 func (s * Personal) FindByName( name string ) (* Person, error) {
+  return s.txFindByName( name, nil )
+}
+
+func (s * Personal) txFindByName( name string, tx * sql.Tx ) (* Person, error) {
   var user_id int
   var username, email, avatar_url string
   var date_created time.Time
+  var row * sql.Row
 
   s.logf( "personal.FindByName :: %s", name )
 
@@ -22,7 +28,12 @@ func (s * Personal) FindByName( name string ) (* Person, error) {
     db_columns,
     db_predicate)
 
-  row := s.db.QueryRow( sql, name )
+  if tx == nil {
+    row = s.db.QueryRow( sql, name )
+  } else {
+    row = tx.QueryRow( sql, name )
+  }
+
   error := row.Scan( &user_id, &username, &email, &avatar_url, &date_created )
 
   if error != nil {

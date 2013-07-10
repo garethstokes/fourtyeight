@@ -9,40 +9,15 @@ import (
 
 func main() {
   schema := "fourtyeight_development"
-  fmt.Printf( "Seeding personal database :: %s\n", schema )
 
+  // PERSONAL
   p := personal.Store()
   p.OpenSession()
   defer p.CloseSession()
 
-  garry := new( personal.Person )
-  garry.Username = "@garrydanger"
-  garry.Email = "garrydanger@gmail.com"
-  garry.AvatarUrl = "https://si0.twimg.com/profile_images/2083020030/Photo_on_2012-03-16_at_15.47__2.jpg"
+  p.Seed()
 
-  _, error := p.Create( garry, "bobafett" )
-  if error != nil {
-    fmt.Printf( "Creating user, garry... ERROR\n" )
-    fmt.Printf( "%s\n", error )
-    return
-  }
-
-  fmt.Printf( "Creating user, garry... SUCCESS\n" )
-
-  nick := new( personal.Person )
-  nick.Username = "@shredder"
-  nick.Email = "shredder@gmail.com"
-  nick.AvatarUrl = "https://si0.twimg.com/profile_images/1434628104/zzzz-_3_.png"
-
-  _, error = p.Create( nick, "bobafett" )
-  if error != nil {
-    fmt.Printf( "Creating user, nick... ERROR\n" )
-    fmt.Printf( "%s\n", error )
-    return
-  }
-
-  fmt.Printf( "Creating user, nick... SUCCESS\n" )
-
+  // LIBRARY
   fmt.Printf( "Seeding library :: %s\n", schema )
 
   l := library.Store()

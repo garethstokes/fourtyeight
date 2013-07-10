@@ -28,7 +28,7 @@ func PersonalController() {
       return
     }
 
-    ctx.Write(toJson(apiOk( person )))
+    ok( ctx, person )
   })
 
   // POST Validate user creds
@@ -69,10 +69,10 @@ func PersonalController() {
 
     cache.Set( hash.Hash, user )
 
-    ctx.Write(toJson(apiOk( map[string] interface{} {
+    ok( ctx, map[string] interface{} {
       "token": hash.Hash,
       "user": user,
-    })))
+    })
   })
 
   // GET the logged in user
@@ -80,7 +80,7 @@ func PersonalController() {
   //
   // returns the logged in user for the given token
   web.Get("/me/(.+)", func(ctx * web.Context, token string) {
-    ctx.SetHeader("Content-Type", "application/json", true);
+    ctx.SetHeader("Content-Type", "application/json", true)
 
     user := cache.Get( token )
     if user == nil {
@@ -88,7 +88,64 @@ func PersonalController() {
       return
     }
 
-    ctx.Write(toJson(apiOk( user )))
+    ok( ctx, user )
+  })
+
+  web.Get("/user/(.+)/following", func(ctx * web.Context, token string) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    user := cache.Get( token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    followers, _ := p.Following( user.(* personal.Person) )
+    ok( ctx, followers )
+  })
+
+  web.Get("/user/(.+)/followers", func(ctx * web.Context, token string) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    user := cache.Get( token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    following, _ := p.FollowersFor( user.(* personal.Person) )
+    ok( ctx, following )
+  })
+
+  web.Post("/user/(.+)/follow/(.+)", func(ctx * web.Context, token string, toFollow string) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    user := cache.Get( token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    personToFollow, _ := p.FindByName(fmt.Sprintf( "@%s", toFollow ))
+    if personToFollow == nil {
+      apiError( ctx, "Invalid follow username." )
+      return
+    }
+
+    following, _ := p.AddFollowerTo( personToFollow, user.(* personal.Person) )
+    ok( ctx, following )
   })
 
 }

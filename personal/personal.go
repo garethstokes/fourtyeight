@@ -92,11 +92,15 @@ func (s * Personal) InitialiseSchema() {
 
   if rows == 0 {
     s.logf( "Initialising Schema :: %s", s.Schema )
-    s.run( "CREATE TABLE db_schema ( date_created TIMESTAMP );" )
-    s.run( "INSERT INTO db_schema ( date_created ) VALUES ( NOW() );" )
+    s.run( "CREATE TABLE db_schema ( table_id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), date_created TIMESTAMP );" )
 
     s.log( "Initialising Schema :: creating table user" )
-    s.run( "CREATE TABLE user ( user_id INT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, iterations INT, date_created DATETIME NOT NULL);")
+    s.run( "CREATE TABLE user ( user_id INT(11) PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, iterations INT, date_created DATETIME NOT NULL);")
+    s.run( "INSERT INTO db_schema ( name, date_created ) VALUES ( 'user', NOW() );" )
+
+    s.log( "Initialising Schema :: creating table follower" )
+    s.run( "CREATE TABLE follower (user_id INT(11) PRIMARY KEY AUTO_INCREMENT, follower_id INT(11) NOT NULL, CONSTRAINT `fk_follower_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`), CONSTRAINT `fk_follower_follower_id` FOREIGN KEY (`follower_id`) REFERENCES `user` (`user_id`), UNIQUE KEY `unique_followers` (`user_id`, `follower_id`));")
+    s.run( "INSERT INTO db_schema ( name, date_created ) VALUES ( 'follower', NOW() );" )
   }
 }
 
