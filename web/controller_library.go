@@ -33,7 +33,7 @@ func LibraryController() {
 
     posts := l.FindAllFor( token )
 
-    ctx.Write(toJson(apiOk( posts )))
+    ok( ctx, posts )
   })
 
   web.Post("/library/(.+)/document", func(ctx * web.Context, token string) {
@@ -62,7 +62,7 @@ func LibraryController() {
 
     document := l.CreateFrom( post )
 
-    ctx.Write(toJson(apiOk( document )))
+    ok( ctx, document )
   })
 
   web.Get("/document/(.+)", func(ctx * web.Context, documentId string) {
@@ -78,8 +78,7 @@ func LibraryController() {
       return
     }
 
-    ctx.Write(toJson(apiOk( document )))
-
+    ok( ctx, document )
   })
 
   web.Post("/library/(.+)/document/(.+)/post", func(ctx * web.Context, token string, documentId string) {
@@ -107,6 +106,6 @@ func LibraryController() {
 
     document := l.AddPost( post, documentId )
 
-    ctx.Write(toJson(apiOk( document )))
+    ok( ctx, document )
   })
 }
