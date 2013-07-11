@@ -145,6 +145,14 @@ func (s * Personal) AddFollowerTo( user * Person, follower * Person ) ([]Person,
     }
   }
 
+  if user.id == 0 {
+    user, _ = s.txFindByName( user.Username, tx )
+  }
+
+  if follower.id == 0 {
+    follower, _ = s.txFindByName( follower.Username, tx )
+  }
+
   // if we reach here then it is safe to add
   // the user to the list of followers.
   sql := fmt.Sprintf( "INSERT INTO follower (user_id, follower_id) VALUES ( %d, %d );",

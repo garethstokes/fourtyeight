@@ -1,6 +1,6 @@
 package personal
 
-func garrydanger() * Person {
+func make_garrydanger() * Person {
   person := new( Person )
   person.Username = "@garrydanger"
   person.Email = "garrydanger@gmail.com"
@@ -8,7 +8,7 @@ func garrydanger() * Person {
   return person
 }
 
-func shredder() * Person {
+func make_shredder() * Person {
   person := new( Person )
   person.Username = "@shredder"
   person.Email = "shredder@gmail.com"
@@ -16,7 +16,7 @@ func shredder() * Person {
   return person
 }
 
-func caveman() * Person {
+func make_caveman() * Person {
   person := new( Person )
   person.Username = "@caveman"
   person.Email = "big_scary_cave@gmail.com"
@@ -24,24 +24,28 @@ func caveman() * Person {
   return person
 }
 
-func (s * Personal) seedSingleUser( user * Person ) {
-  _, error := s.Create( user, "bobafett" )
+func (s * Personal) seedSingleUser( user * Person ) * Person {
+  person, error := s.Create( user, "bobafett" )
   if error != nil {
     s.logf( "Creating user, %s... ERROR\n", user.Username )
     s.logf( "%s\n", error )
-    return
+    return nil
   }
 
   s.logf( "Creating user, %s... SUCCESS\n", user.Username )
+  return person
 }
 
 func (s * Personal) Seed() {
   s.log( "\nSeeding Personal" )
   s.log( "================" )
 
-  s.seedSingleUser( garrydanger() )
-  s.seedSingleUser( shredder() )
-  s.seedSingleUser( caveman() )
+  garrydanger := s.seedSingleUser( make_garrydanger() )
+  shredder := s.seedSingleUser( make_shredder() )
+  caveman := s.seedSingleUser( make_caveman() )
+
+  s.AddFollowerTo( garrydanger, shredder )
+  s.AddFollowerTo( caveman, garrydanger )
 
   s.log( "\n\n" )
 }

@@ -5,68 +5,71 @@ import (
   "fmt"
 )
 
-func TestInsertAndFind(t * testing.T) {
-  fmt.Print( "\n\nTest Insert And Find\n" )
+func BeginTest( name string ) (store * Personal) {
+  fmt.Printf( "\n%s\n", name )
 
-  var store = new(Personal)
+  store = new(Personal)
   store.Schema = "fourtyeight_test"
 
   store.OpenSession()
-  defer store.CloseSession()
 
   store.InitialiseSchema()
-  defer store.DropSchema()
 
-  person := garrydanger()
-  password := "this is a password"
+  store.Seed()
+  return store
+}
 
-  _, error := store.Create( person, password )
+func CleanUp(store * Personal) {
+  store.DropSchema()
+  store.CloseSession()
+}
+
+func TestFindByName(t * testing.T) {
+  s := BeginTest( "Find by name" )
+  defer CleanUp(s)
+
+  person, error := s.FindByName( "@garrydanger" )
   if error != nil {
     t.Fail()
   }
 
-  person, error = store.FindByName( "@garrydanger" )
-  if error != nil {
+  if person.Username != "@garrydanger" {
+    fmt.Print( "Incorrect user returned." )
     t.Fail()
   }
+}
 
-  person, error = store.Validate( person.Username, password )
+func TestValidate(t * testing.T) {
+  s := BeginTest( "Validate user" )
+  defer CleanUp(s)
+
+  username := "@garrydanger"
+  password := "bobafett"
+
+  person, error := s.Validate( username, password )
   if error != nil {
     fmt.Printf(
       "Incorrect Password ( %s, %s )\n",
-      person.Username,
+      username,
       password)
 
     t.Fail()
   }
 
-  //fmt.Printf( "%@\n", person )
+  if person.Username != username {
+    fmt.Print( "wrong username returned." )
+    t.Fail()
+  }
 }
 
 func TestGetFollowers(t * testing.T) {
-  fmt.Print( "\n\nTest Followers \n" )
+  s := BeginTest( "Get Followers" )
+  defer CleanUp(s)
 
-  var store = new( Personal )
-  store.Schema = "fourtyeight_test"
+  garrydanger, _ := s.FindByName( "@garrydanger" )
+  shredder, _ := s.FindByName( "@shredder" )
 
-  store.OpenSession()
-  defer store.CloseSession()
-
-  store.InitialiseSchema()
-  defer store.DropSchema()
-
-  // create the test user accounts
-  store.Seed()
-
-  garrydanger, _ := store.FindByName( "@garrydanger" )
-  shredder, _ := store.FindByName( "@shredder" )
-
-  followers, error := store.AddFollowerTo( garrydanger, shredder )
-  if error != nil {
-    fmt.Print( error.Error() )
-    t.Fail()
-    return
-  }
+  followers, _ := s.FollowersFor( garrydanger )
 
   if len(followers) != 1 {
     fmt.Printf( "Incorrect number of followers, expecting 1 but found %d\n", len(followers) )
