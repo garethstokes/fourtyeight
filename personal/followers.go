@@ -145,10 +145,12 @@ func (s * Personal) AddFollowerTo( user * Person, follower * Person ) ([]Person,
     }
   }
 
+  // look up the user if we don't have any ids
   if user.id == 0 {
     user, _ = s.txFindByName( user.Username, tx )
   }
 
+  // look up the follower if we don't have any ids
   if follower.id == 0 {
     follower, _ = s.txFindByName( follower.Username, tx )
   }
