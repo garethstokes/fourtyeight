@@ -6,8 +6,8 @@ window.drop = function() {
 
   function center(element) {
     $(element).css({
-      "top": "50%", //(config.height /2) - 150,
-      "left": "50%", //((config.width /2) - $(element).width() /2) + "px"
+      "top": "50%", 
+      "left": "50%",
       "margin-top": "-150px",
       "margin-left": "-" + ($(element).width() /2) + "px"
     });
@@ -61,55 +61,6 @@ window.drop = function() {
     center('#message');
     $('#message').fadeIn(400);
 
-    $('#sign-in-with-facebook').mousedown(function() {
-      $(this).addClass('fb-down');
-    }).mouseup(function() {
-      $(this).removeClass('fb-down');
-    });
-
-    var inputGreeting = 'Give us your email...';
-
-    $('input').focus();
-    $('input').val('Give us your email...');
-    $('input').keydown(function() {
-      if (this.value === inputGreeting) {
-        this.value = '';
-      }
-      
-    }).focusout(function() {
-      if (this.value === '') {
-        this.value = inputGreeting;
-      }
-    }).focusout(function() {
-      $('form').submit();
-    });
-
-    $('form').submit(function() {
-      //var value = $(this).serialize();
-
-      var value = $('#email').val();
-
-      if (value === inputGreeting) { return false; }
-      
-      if( value.indexOf('@') === -1 ) {
-        $('#error').css({
-          "margin": "8px 14px 8px 32px"
-        }).html( 'that email is not valid.' );
-        return false;
-      }
-
-      // fade out before saving to server.
-      fadeMesageOut();
-
-      setTimeout(function() {
-        $('#message').remove();
-        showThankyou();
-      }, 2000);
-
-      store.persist( value );
-
-      return false;
-    });
   }
 
   function showThankyou() {

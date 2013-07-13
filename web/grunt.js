@@ -11,14 +11,14 @@ module.exports = function(grunt) {
               ' *\n' +
               ' *  By Dave Cave (caveman), Nick Skelton (shredder) and Gareth Stokes (garrydanger) */\n',
       commonFiles: [
-        'src/rainemitter.js', 
-        'src/rainstate.js', 
-        'src/signup.js'
+        'assets/javascripts/rainemitter.js', 
+        'assets/javascripts/rainstate.js', 
+        'assets/javascripts/signup.js'
       ]
     },
 
     lint: {
-      files: ['src/signup.js']
+      files: ['assets/javascripts/signup.js']
     },
 
     jshint: {
@@ -45,7 +45,7 @@ module.exports = function(grunt) {
     },
 
     clean: {
-      build: 'js/drop.js'
+      build: 'static/js/drop.js'
     },
   
     concat: {
@@ -54,14 +54,14 @@ module.exports = function(grunt) {
         src: [
           '<config:meta.commonFiles>'
         ],
-        dest: 'js/drop.js'
+        dest: 'static/js/drop.js'
       }
     },
 
     min: {
       all: {
         src: ['<banner:meta.banner>', '<config:concat.all.dest>'],
-        dest: 'js/drop.min.js'
+        dest: 'static/js/drop.min.js'
       }
     },
 

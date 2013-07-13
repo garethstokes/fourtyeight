@@ -125,8 +125,8 @@ window.drop = function() {
 
   function center(element) {
     $(element).css({
-      "top": "50%", //(config.height /2) - 150,
-      "left": "50%", //((config.width /2) - $(element).width() /2) + "px"
+      "top": "50%", 
+      "left": "50%",
       "margin-top": "-150px",
       "margin-left": "-" + ($(element).width() /2) + "px"
     });
@@ -220,12 +220,26 @@ window.drop = function() {
       // fade out before saving to server.
       fadeMesageOut();
 
-      setTimeout(function() {
-        $('#message').remove();
-        showThankyou();
-      }, 2000);
+      $.ajax({
+          method: "post",
+          url: $(this).attr('action'), //sumbits it to the given url of the form
+          data: $(this).serialize()
+      }).success(function(json) {
+        if (json.status === "error") {
+          $('#error').html(json.result);
+          return false;
+        }
 
-      store.persist( value );
+        setTimeout(function() {
+          $('#message').remove();
+          showThankyou();
+        }, 2000);
+
+        store.persist( value );
+
+      }).error(function() {
+        $('#error').html('something bad happened.');
+      });
 
       return false;
     });

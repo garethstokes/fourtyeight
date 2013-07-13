@@ -118,3 +118,24 @@ func (s * Personal) DropSchema() {
   s.run( fmt.Sprintf("DROP DATABASE %s;", s.Schema) );
   s.run( fmt.Sprintf("CREATE DATABASE %s;", s.Schema) );
 }
+
+func (s * Personal) SaveToWaitingList(email string) error {
+  sql := "INSERT INTO waitinglist ( email, date_created ) VALUES ( ?, NOW() );"
+  statement, error := s.db.Prepare( sql )
+  if error != nil {
+    s.error( error.Error() )
+    return error
+  }
+  defer statement.Close()
+
+  s.log(sql)
+
+  _, error = statement.Exec( email )
+
+  if error != nil {
+    s.error( error.Error() )
+    return error
+  }
+
+  return nil
+}
