@@ -17,17 +17,10 @@ h3 { margin: 0px; }
 }
 
 #message, #thank-you {
+  display:none;
   position: absolute;
   width: 300px;
   margin: 0 auto;
-}
-
-#message {
-  display: block;
-}
-
-#thank-you {
-  display: none;
 }
 
 #message p {

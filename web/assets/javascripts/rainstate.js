@@ -15,12 +15,19 @@ rainState = gamvas.State.extend({
         //this.bg = new gamvas.Image(this.resource.getImage('media/rainbg.jpeg'));
 	},
 
-    preDraw: function(t) {
-    },
+  preDraw: function(t) {
+  },
 
-    postDraw: function(t) {
-        // draw help after camera was applied
-        //drawNextEffect(this.c);
-    }
+  postDraw: function(t) {
+      // draw help after camera was applied
+      //drawNextEffect(this.c);
+  }, 
+  
+  loading: function(t) {
+    var d = gamvas.getCanvasDimension();
+    var tp = (d.h/2)-5;
+    var w = parseInt(d.w*0.7, 10);
+    var off = parseInt((d.w-w)/2, 10);
+  }
 
 });

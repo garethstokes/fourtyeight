@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/garethstokes/web"
+	"github.com/hoisie/web"
 )
 
 func RegisterRoutes() {
@@ -10,6 +10,5 @@ func RegisterRoutes() {
   web.Get("/", func(ctx * web.Context) {
 		ctx.Write(toJson( "let thy object decend as if it were calescent" ));
   })
-
 
 }

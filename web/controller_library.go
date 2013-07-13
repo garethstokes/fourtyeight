@@ -4,7 +4,7 @@ import (
   "fmt"
   "time"
 	"encoding/json"
-	"github.com/garethstokes/web"
+	"github.com/hoisie/web"
 	"github.com/garethstokes/fourtyeight/library"
 	"github.com/garethstokes/fourtyeight/personal"
 	"github.com/garethstokes/fourtyeight/cache"

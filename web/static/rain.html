@@ -4,10 +4,8 @@
         <title>The Drop :: A social network</title>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
         <script src="js/jquery-1.10.2.min.js"></script>
-        <script src="js/gamvas.debug.js"></script>
-        <script src="rainemitter.js"></script>
-        <script src="rainstate.js"></script>
-        <script src="signup.js"></script>
+        <script src="js/gamvas.js"></script>
+        <script src="js/drop.js"></script>
 
         <link rel="stylesheet" type="text/css" href="styles/rain.css">
 
@@ -23,11 +21,7 @@
                 height: $(window).height()
               });
 
-              window.startDrop({
-                width: $(window).width(), 
-                height: $(window).height()
-              });
-
+              window.drop();
               
               gamvas.state.addState(new rainState('rain'));
               gamvas.start('gameCanvas');

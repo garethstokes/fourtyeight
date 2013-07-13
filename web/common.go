@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"encoding/json"
-  "github.com/garethstokes/web"
+  "github.com/hoisie/web"
 )
 
 type ApiResponse struct {
