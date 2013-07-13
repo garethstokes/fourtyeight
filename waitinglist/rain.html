@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>The Drop :: A social network</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+        <script src="js/jquery-1.10.2.min.js"></script>
+        <script src="js/gamvas.debug.js"></script>
+        <script src="rainemitter.js"></script>
+        <script src="rainstate.js"></script>
+        <script src="signup.js"></script>
+
+        <link rel="stylesheet" type="text/css" href="styles/rain.css">
+
+        <script type="text/javascript">
+          // prevent the browser from scrolling on keyboard input
+          gamvas.config.preventKeyEvents = false;
+
+          // add our states and start
+          gamvas.event.addOnLoad(function() {
+              
+              $('#gameCanvas').attr({ 
+                width: $(window).width(),
+                height: $(window).height()
+              });
+
+              window.startDrop({
+                width: $(window).width(), 
+                height: $(window).height()
+              });
+
+              
+              gamvas.state.addState(new rainState('rain'));
+              gamvas.start('gameCanvas');
+          });
+      </script>
+    </head>
+    <body>
+      <canvas id="gameCanvas"></canvas>
+      <div id="message">
+        <img src="media/big_drop.png" alt="The drop" class="logo">
+        <div id="form">
+          <h3>The Drop</h3>
+          <p>Register your interest for our beta program</p>
+
+          <form action="">
+            <input type="text" name="email" id="email">
+            <div class='alert' id='error'></div>
+          </form>
+
+          <p class="separator">or</p>
+
+          <div id="sign-in-with-facebook">
+            <img src="media/facebook-24x24.png" alt="Sign in with facebook">
+            <span>sign in with facebook</span>
+          </div>
+
+        </div>
+      </div>
+
+      <div id="thank-you">
+        <h3>Thank you</h3>
+        <p>For your interest in 'The Drop'.</p>
+        <p>We will contact you soon!</p>
+      </div>
+    
+    </body>
+</html>
+
