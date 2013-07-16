@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>The Drop :: A social network</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script src="js/jquery-1.10.2.min.js"></script>
+    <script src="js/feed.js"></script>
+
+    <link rel="stylesheet" type="text/css" href="styles/feed.css">
+
+    <script type="text/javascript">
+      var datasource = function() {
+        "use strict";
+        /* global drop */
+        
+        drop.fire('data', [
+        { 
+          "lastUpdated": "2013-07-09T13:23:53.714103269Z",
+          "mainPost": {
+            "ownerId": "@garrydanger",
+            "imageUrl": "http://i.imgur.com/1dxWiPF.jpg",
+            "text": "the iron throne",
+            "dateCreated": "2013-07-09T13:23:53.712520121Z"
+          },
+          "comments":[]
+        },{ 
+          "lastUpdated": "2013-07-09T13:23:53.714103269Z",
+          "mainPost": {
+            "ownerId": "@caveman",
+            "imageUrl": "http://i.imgur.com/F94emFR.jpg",
+            "dateCreated": "2013-07-09T13:23:53.712520121Z"
+          },
+          "comments":[]
+        },{ 
+          "lastUpdated": "2013-07-09T13:23:53.714103269Z",
+          "mainPost": {
+            "ownerId": "@shredder",
+            "text": "i blow goatz #YOLO",
+            "dateCreated": "2013-07-09T13:23:53.712520121Z"
+          },
+          "comments":[]
+        }]);
+
+      };
+
+      $(document).ready(function() {
+        drop.feed({ 
+          datasource: datasource,
+          log: console.log,
+          containers: {
+            hybrid: 'tpl-feed-hybrid', 
+            text: 'tpl-feed-text',
+            image: 'tpl-feed-image',
+            content: 'feed-content'
+          }
+        });
+      });
+    </script>
+    
+  </head>
+  <body>
+    <div id="container">
+      <div id="top-nav">
+        <img class='logo' src="media/header_home_icon.png" alt='back to top'>
+      </div>
+
+      <div id="feed-content">
+
+      </div>
+
+    </div>
+
+    <div id="templates">
+      
+      <div id="tpl-feed-text" class='feed-text-post'>
+        <span class='author'>{{feed-author}}</span>
+        <div class='text'>{{feed-text}}</div>
+        <div class='comments'>
+          {{feed-comments}}
+        </div>
+      </div>
+      
+      <div id="tpl-feed-image" class='feed-image-post'>
+        <span class='author'>{{feed-author}}</span>
+        {{feed-image}}
+        <div class='comments'>
+          {{feed-comments}}
+        </div>
+      </div>
+      
+      <div id="tpl-feed-hybrid" class='feed-hybrid-post'>
+        <span class='author'>{{feed-author}}</span>
+        <div class='text'>{{feed-text}}</div>
+        {{feed-image}}
+        <div class='comments'>
+          {{feed-comments}}
+        </div>
+      </div>
+
+    </div>
+  </body>
+</html>
