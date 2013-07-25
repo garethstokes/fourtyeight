@@ -1,6 +1,7 @@
 package main
 
 import (
+  "net/http"
 	"github.com/hoisie/web"
 	"github.com/garethstokes/fourtyeight/personal"
 )
@@ -9,7 +10,7 @@ func RegisterRoutes() {
 
   // DEFAULT ROUTE
   web.Get("/", func(ctx * web.Context) {
-		ctx.Write(toJson( "let thy object decend as if it were calescent" ));
+    http.ServeFile(ctx, ctx.Request, "./static/rain.html")
   })
 
   // Take a email down for the waiting list

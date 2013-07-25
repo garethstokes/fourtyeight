@@ -137,8 +137,11 @@ window.drop = function() {
     center('#thank-you');
     $('#thank-you').css({ "margin-left": "+=45" });
     $('#thank-you').fadeIn(500);
+    
+    /*
     $('#thank-you').append('<br /><br /><input type="button" value="clear local storage"></input>')
                    .click(function() { store.clear(); window.location = "rain.html"; });
+    */
   }
 
   if (typeof store.get() === 'undefined') {
