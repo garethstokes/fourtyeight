@@ -140,3 +140,7 @@ func (s * Library) FindAllFor(userId string) []Document {
 
     return result
 }
+
+func (s * Library) DeleteOne(id string) error {
+  return s.collection.Remove(bson.M{"key": bson.ObjectIdHex(id)})
+}

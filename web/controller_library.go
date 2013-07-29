@@ -108,4 +108,27 @@ func LibraryController() {
 
     ok( ctx, document )
   })
+
+  web.Post("/library/(.+)/delete/(.+)", func(ctx * web.Context, token string, documentId string) {
+    ctx.SetHeader("Content-Type", "application/json", true)
+
+    user := cache.Get(token)
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    l := library.Store()
+    l.OpenSession()
+    defer l.CloseSession()
+
+    err := l.DeleteOne(documentId)
+    if err != nil {
+      apiError(ctx, "There was a problem contacting library service.")
+      fmt.Printf("ERROR: %s\n", err.Error())
+      return
+    }
+
+    ok( ctx, true )
+  })
 }

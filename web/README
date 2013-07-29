@@ -53,3 +53,8 @@ curl -XPOST localhost:8080/library/lxm2vpRnNbHdwju2unFMig==/document/51dc1fb8ee6
         ]
       }
     }
+
+= delete a post
+curl -XPOST localhost:8080/library/{token}/delete/{id}
+
+  return {"ok":true,"result":true}
