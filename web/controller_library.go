@@ -54,7 +54,6 @@ func LibraryController() {
     }
 
     post.OwnerId = user.(* personal.Person).Username
-    post.DateCreated = time.Now().UTC()
 
     l := library.Store()
     l.OpenSession()

@@ -11,12 +11,12 @@ type Post struct {
   OwnerId string `json:"ownerId"`
   Image string `json:"imageUrl"`
   Text string `json:"text"`
-  DateCreated time.Time `json:"dateCreated"`
+  DateCreated int64 `json:"dateCreated"`
 }
 
 type Document struct {
   Key interface{} `json:"key"`
-  LastUpdated time.Time `json:"lastUpdated"`
+  LastUpdated int64 `json:"lastUpdated"`
   MainPost * Post `json:"mainPost"`
   Comments []Post `json:"comments"`
 }
@@ -67,9 +67,12 @@ func (s * Library) CreateFrom(post * Post) * Document {
 
   document := new(Document)
   document.Key = bson.NewObjectId()
-  document.LastUpdated = time.Now().UTC()
+  document.LastUpdated = time.Now().UTC().Unix()
   document.MainPost = post
   document.Comments = make([]Post, 0)
+
+  // set the date created on the post
+  post.DateCreated = time.Now().UTC().Unix()
 
   err := s.collection.Insert(document)
   if err != nil {
