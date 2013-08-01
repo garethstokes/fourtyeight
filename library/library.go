@@ -11,14 +11,6 @@ type Post struct {
   OwnerId string `json:"ownerId"`
   Image string `json:"imageUrl"`
   Text string `json:"text"`
-  DateCreated int64 `json:"dateCreated"`
-}
-
-type Document struct {
-  Key interface{} `json:"key"`
-  LastUpdated int64 `json:"lastUpdated"`
-  MainPost * Post `json:"mainPost"`
-  Comments []Post `json:"comments"`
 }
 
 type Library struct {
@@ -62,17 +54,16 @@ func (s * Library) DestroyCollectionAndCloseSession() {
   s.session.Close()
 }
 
-func (s * Library) CreateFrom(post * Post) * Document {
+func (s * Library) CreateFrom(post * Post, expiry time.Duration) * Document {
   fmt.Printf( "Library.CreateFrom :: %@\n", post )
+  fmt.Printf( "Duration: %d\n", expiry)
 
   document := new(Document)
   document.Key = bson.NewObjectId()
-  document.LastUpdated = time.Now().UTC().Unix()
   document.MainPost = post
   document.Comments = make([]Post, 0)
-
-  // set the date created on the post
-  post.DateCreated = time.Now().UTC().Unix()
+  document.ExpirationDelta = expiry
+  document.DateCreated = time.Now().UTC().Unix()
 
   err := s.collection.Insert(document)
   if err != nil {
@@ -129,7 +120,17 @@ func (s * Library) FindDocumentsFor(userId string) []Document {
         panic(err)
     }
 
-    return result
+    documents := make([]Document, 0)
+    for _, d := range result {
+      if d.expired() {
+        continue
+      }
+
+      documents = append(documents, d)
+    }
+
+    fmt.Printf("documents: %d\n", len(documents))
+    return documents
 }
 
 func (s * Library) FindAllFor(userId string) []Document {

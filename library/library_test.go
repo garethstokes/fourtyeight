@@ -2,23 +2,49 @@ package library
 
 import (
   "testing"
+  "time"
 )
 
-func TestInsertAndFind(t * testing.T) {
-  var store = new(Store)
-  store.Schema = "fourtyeight_test"
-
-  store.OpenSession()
-  defer store.DestroyCollectionAndCloseSession()
-
+func post() * Post {
   post := new(Post)
-  post.OwnerId = 69
+  post.OwnerId = "@garrydanger"
   post.Image = "http://i.imgur.com/FudYBky.jpg"
   post.Text = "Took me a while to figure out that hand-situation."
 
-  document := store.CreateFrom(post)
-  t.Log(document)
+  return post
+}
 
-  documents := store.FindDocumentsFor(69)
-  t.Log(documents)
+func TestInsertAndFind(t * testing.T) {
+  var library = new(Library)
+  library.Schema = "fourtyeight_test"
+
+  library.OpenSession()
+  defer library.DestroyCollectionAndCloseSession()
+
+  post := post()
+
+  library.CreateFrom(post, 48 * time.Hour)
+  documents := library.FindDocumentsFor("@garrydanger")
+
+  if len(documents) != 1 {
+    t.Fatal("document not found.")
+  }
+}
+
+func TestExpiration(t * testing.T) {
+  var library = new(Library)
+  library.Schema = "fourtyeight_test"
+
+  library.OpenSession()
+  defer library.DestroyCollectionAndCloseSession()
+
+  post := post()
+  library.CreateFrom(post, time.Second)
+
+  time.Sleep(2 * time.Second)
+  documents := library.FindDocumentsFor("@garrydanger")
+
+  if len(documents) != 0 {
+    t.Fatal("document did not expire.")
+  }
 }

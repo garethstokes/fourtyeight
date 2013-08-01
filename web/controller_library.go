@@ -2,6 +2,7 @@ package main
 
 import (
   "fmt"
+  "time"
 	"encoding/json"
 	"github.com/hoisie/web"
 	"github.com/garethstokes/fourtyeight/library"
@@ -35,6 +36,15 @@ func LibraryController() {
     ok( ctx, posts )
   })
 
+  // POST Create a document attached to a user
+  // Example: localhost:8080/library/e51n4EZvN8KL7uoQUtmbWw==/document 
+  //
+  // will attach a expiry delta that needs to be specified
+  //
+  type PostWithExpiry struct {
+    library.Post
+    Expiry int
+  }
   web.Post("/library/(.+)/document", func(ctx * web.Context, token string) {
     ctx.SetHeader("Content-Type", "application/json", true)
 
@@ -44,7 +54,7 @@ func LibraryController() {
       return
     }
 
-    post := new( library.Post )
+    post := new(PostWithExpiry)
     err := json.NewDecoder(ctx.Request.Body).Decode(&post)
     if err != nil {
 			apiError(ctx, "incorrect parameters found")
@@ -52,13 +62,22 @@ func LibraryController() {
 			return
     }
 
-    post.OwnerId = user.(* personal.Person).Username
-
     l := library.Store()
     l.OpenSession()
     defer l.CloseSession()
 
-    document := l.CreateFrom( post )
+    p := new(library.Post)
+    p.OwnerId = user.(* personal.Person).Username
+    p.Image = post.Image
+    p.Text = post.Text
+
+    expiry, err := time.ParseDuration(fmt.Sprintf("%ds", post.Expiry))
+    if err != nil {
+      apiError(ctx, "Invalid expiry.")
+      return
+    }
+
+    document := l.CreateFrom( p, expiry )
 
     ok( ctx, document )
   })
