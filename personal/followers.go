@@ -2,7 +2,6 @@ package personal
 
 import (
   "fmt"
-  "time"
   "database/sql"
 )
 
@@ -19,7 +18,7 @@ func (s * Personal) FollowersFor( user * Person ) ([]Person, error) {
 func (s * Personal) txFollowersFor( user * Person, tx * sql.Tx ) ([]Person, error) {
   var user_id int
   var username, email, avatar_url string
-  var date_created time.Time
+  var date_created int64
   var rows * sql.Rows
   var error error
 
@@ -73,7 +72,7 @@ func (s * Personal) Following( user * Person ) ([]Person, error) {
 func (s * Personal) txFollowing( user * Person, tx * sql.Tx ) ([]Person, error) {
   var user_id int
   var username, email, avatar_url string
-  var date_created time.Time
+  var date_created int64
   var rows * sql.Rows
   var error error
 

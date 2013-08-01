@@ -17,7 +17,7 @@ func (s * Personal) Create( person * Person, password string ) (* Person, error)
 
   pass := passwords.Compute( password )
 
-  auth := new( PersonAuthorisation )
+  auth := new(PersonAuthorisation)
   auth.Password = pass.Hash
   auth.Salt = pass.Salt
   auth.Iterations = pass.Iterations
@@ -28,8 +28,8 @@ func (s * Personal) Create( person * Person, password string ) (* Person, error)
     person.AvatarUrl,
     auth.Password,
     auth.Salt,
-    auth.Iterations, 
-    time.Now())
+    auth.Iterations,
+    time.Now().UTC().Unix())
 
   if error != nil {
     s.error( error.Error() )

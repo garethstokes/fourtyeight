@@ -2,7 +2,6 @@ package personal
 
 import (
   "fmt"
-  "time"
   "database/sql"
 )
 
@@ -18,7 +17,7 @@ func (s * Personal) FindByName( name string ) (* Person, error) {
 func (s * Personal) txFindByName( name string, tx * sql.Tx ) (* Person, error) {
   var user_id int
   var username, email, avatar_url string
-  var date_created time.Time
+  var date_created int64
   var row * sql.Row
 
   s.logf( "personal.FindByName :: %s", name )

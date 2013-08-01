@@ -2,7 +2,6 @@ package personal
 
 import "database/sql"
 import _ "github.com/go-sql-driver/mysql"
-import "time"
 import "fmt"
 
 // the backticks are field tags that let
@@ -12,7 +11,7 @@ type Person struct {
   Username string `json:"name"`
   Email string `json:"email"`
   AvatarUrl string `json:"avatarUrl"`
-  DateCreated time.Time `json:"dateCreated"`
+  DateCreated int64 `json:"dateCreated"`
 }
 
 type PersonAuthorisation struct {
@@ -101,7 +100,7 @@ func (s * Personal) InitialiseSchema() {
     s.run( "CREATE TABLE db_schema ( table_id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), date_created TIMESTAMP );" )
 
     var sql string
-    sql = "CREATE TABLE user ( user_id INT(11) PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, iterations INT, date_created DATETIME NOT NULL);"
+    sql = "CREATE TABLE user ( user_id INT(11) PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, iterations INT, date_created BIGINT NOT NULL);"
     s.createTable( "user", sql );
 
     sql = "CREATE TABLE follower (user_id INT(11) PRIMARY KEY AUTO_INCREMENT, follower_id INT(11) NOT NULL, CONSTRAINT `fk_follower_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`), CONSTRAINT `fk_follower_follower_id` FOREIGN KEY (`follower_id`) REFERENCES `user` (`user_id`), UNIQUE KEY `unique_followers` (`user_id`, `follower_id`));"
