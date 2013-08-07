@@ -54,7 +54,7 @@ func (s * Library) DestroyCollectionAndCloseSession() {
   s.session.Close()
 }
 
-func (s * Library) CreateFrom(post * Post, expiry time.Duration) * Document {
+func (s * Library) CreateFrom(post * Post, expiry int64) * Document {
   fmt.Printf( "Library.CreateFrom :: %@\n", post )
   fmt.Printf( "Duration: %d\n", expiry)
 

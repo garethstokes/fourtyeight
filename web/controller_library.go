@@ -43,7 +43,7 @@ func LibraryController() {
   //
   type PostWithExpiry struct {
     library.Post
-    Expiry int
+    Expiry int64
   }
   web.Post("/library/(.+)/document", func(ctx * web.Context, token string) {
     ctx.SetHeader("Content-Type", "application/json", true)
@@ -71,13 +71,7 @@ func LibraryController() {
     p.Image = post.Image
     p.Text = post.Text
 
-    expiry, err := time.ParseDuration(fmt.Sprintf("%ds", post.Expiry))
-    if err != nil {
-      apiError(ctx, "Invalid expiry.")
-      return
-    }
-
-    document := l.CreateFrom( p, expiry )
+    document := l.CreateFrom( p, post.Expiry )
 
     ok( ctx, document )
   })

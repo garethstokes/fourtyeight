@@ -10,7 +10,7 @@ type Document struct {
   MainPost * Post `json:"mainPost"`
   Comments []Post `json:"comments"`
   DateCreated int64 `json:"dateCreated"`
-  ExpirationDelta time.Duration `json:"expirationDelta"`
+  ExpirationDelta int64 `json:"expirationDelta"`
 }
 
 func (d * Document) expired() bool {

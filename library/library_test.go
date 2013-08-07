@@ -23,7 +23,8 @@ func TestInsertAndFind(t * testing.T) {
 
   post := post()
 
-  library.CreateFrom(post, 48 * time.Hour)
+  // 48 hours
+  library.CreateFrom(post, 60 * 60 * 48)
   documents := library.FindDocumentsFor("@garrydanger")
 
   if len(documents) != 1 {
@@ -39,10 +40,17 @@ func TestExpiration(t * testing.T) {
   defer library.DestroyCollectionAndCloseSession()
 
   post := post()
-  library.CreateFrom(post, time.Second)
+  library.CreateFrom(post, 1)
+  documents := library.FindDocumentsFor("@garrydanger")
+  if len(documents) != 1 {
+    t.Fatal("document did not save.")
+  }
+  if documents[0].ExpirationDelta != 1 {
+    t.Fatal("document did not save ExpirationDelta in correct form.")
+  }
 
   time.Sleep(2 * time.Second)
-  documents := library.FindDocumentsFor("@garrydanger")
+  documents = library.FindDocumentsFor("@garrydanger")
 
   if len(documents) != 0 {
     t.Fatal("document did not expire.")
