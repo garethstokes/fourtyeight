@@ -2,7 +2,6 @@ package main
 
 import (
   "fmt"
-  "time"
 	"encoding/json"
 	"github.com/hoisie/web"
 	"github.com/garethstokes/fourtyeight/library"
