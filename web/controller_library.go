@@ -30,7 +30,7 @@ func LibraryController() {
       return
     }
 
-    posts := l.FindDocumentsFor(user.Username)
+    posts := l.FindDocumentsFor(user.(* personal.Person).Username)
 
     ok( ctx, posts )
   })
