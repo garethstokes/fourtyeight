@@ -94,6 +94,6 @@ module.exports = function(grunt) {
   // Tasks to use from command line
 
   grunt.registerTask('default', 'lint clean concat min');
-  grunt.registerTask('w', 'server reload watch'); // you need to run reload before watch to start proxy server 
+  grunt.registerTask('w', 'server watch'); // you need to run reload before watch to start proxy server 
 };
 
