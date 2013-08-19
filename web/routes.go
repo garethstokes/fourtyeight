@@ -10,7 +10,7 @@ func RegisterRoutes() {
 
   // DEFAULT ROUTE
   web.Get("/", func(ctx * web.Context) {
-    http.ServeFile(ctx, ctx.Request, "./static/rain.html")
+    http.ServeFile(ctx, ctx.Request, "./static/landing.html")
   })
 
   // Take a email down for the waiting list
