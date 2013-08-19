@@ -5,34 +5,49 @@
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <script src="js/jquery-1.10.2.min.js"></script>
-    <!-- <script src="js/landing.js"></script> //-->
+    <script src="js/landing.js"></script>
 
 	  <link rel="stylesheet" type="text/css" href="styles/landing.css">
 
-    <script type="text/javascript"></script>
+    <script type="text/javascript">
+      $(document).ready(function() {
+        var configuration = {
+          submit: $('#submit'),
+          form: $('#form'),
+          result: $('#form-result')
+        };
+
+        application(configuration);
+      });
+    </script>
   </head>
   <body>
     <div id="container">
       <img src="media/shortfuse_logo_temporal_apps.png" alt="short term sharing">
       <div id="middle">
-        <div id="middle-copy">
-          <p class='dark'>Short term sharing</p>
-          <p>Iphone / Android beta-testers wanted.</p>
+        <div id="form">
+          <div id="middle-copy">
+            <p class='dark'>Short term sharing</p>
+            <p>Iphone / Android beta-testers wanted.</p>
+          </div>
+          <form>
+            <input type="text" id="email">
+            <div id="submit">Sign up</div>
+          </form>
         </div>
-        <form>
-          <input type="text" id="email">
-          <div id="submit">Sign up</div>
-        </form>
+        <div id="form-result">
+          <img src="media/sign_up_success_trans.png" alt="good job">
+        </div>
       </div>
       <div class="separator"></div>
       <div id="footer">
-        <p><i>Nothing lasts forever.</i></p>
         <p><strong>Our mandate</strong></p>
         <ol>
           <li>1. We'll never keep your data</li>
           <li>2. We live for now</li>
           <li>3. Everything is temporary</li>
         </ol>
+        <img src="media/nothing_lasts_forever.png" alt="nothing lasts forever">
       </div>
     </div>
   </body>

@@ -21,7 +21,7 @@ p {
 .separator {
   background: url('../media/dotted_line_bottom.png') no-repeat;
   height: 5px;
-  width: 320px;
+  width: 300px;
   margin: 8px auto;
   padding: 0px 0 15px 0;
 }
@@ -109,7 +109,12 @@ form {
   margin-right: 1px;
 }
 
+#form-result {
+  display: none;
+}
+
 ol {
   list-style: none;
   padding: 0;
+  font-size: 14px;
 }
