@@ -148,4 +148,51 @@ func PersonalController() {
     ok( ctx, following )
   })
 
+  /*
+      CREATE USER: 
+        note that ctx.Params does not work on json input
+
+  */
+  type userCreateParams struct {
+    personal.Person
+    Password string
+  }
+
+  web.Post("/user", func(ctx * web.Context) {
+    ctx.SetHeader("Content-Type", "application/json", true);
+
+    params := new(userCreateParams)
+    err := json.NewDecoder(ctx.Request.Body).Decode(&params)
+    if err != nil {
+			apiError(ctx, "incorrect parameters found")
+      fmt.Printf( "ERROR: %s\n", err.Error() )
+			return
+    }
+
+    fmt.Printf("%@\n", params)
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    u := new(personal.Person)
+    u.Username = fmt.Sprintf( "@%s", params.Username )
+    u.Email = params.Email
+    u.AvatarUrl = params.AvatarUrl
+    fmt.Printf("%@\n", u)
+    user, error := p.Create(u, params.Password)
+    if error != nil {
+      apiError( ctx, error.Error() )
+      return
+    }
+
+    hash := passwords.Compute( user.Username + params.Password )
+    cache.Set(hash.Hash, user)
+
+    ok( ctx, map[string] interface{} {
+      "token": hash.Hash,
+      "user": user,
+    })
+  })
+
 }
