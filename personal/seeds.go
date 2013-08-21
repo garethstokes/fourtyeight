@@ -45,7 +45,13 @@ func (s * Personal) Seed() {
   caveman := s.seedSingleUser( make_caveman() )
 
   s.AddFollowerTo( garrydanger, shredder )
+  s.AddFollowerTo( garrydanger, caveman )
+
   s.AddFollowerTo( caveman, garrydanger )
+  s.AddFollowerTo( caveman, shredder )
+
+  s.AddFollowerTo( shredder, garrydanger )
+  s.AddFollowerTo( shredder, caveman )
 
   s.log( "\n\n" )
 }

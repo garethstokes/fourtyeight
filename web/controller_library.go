@@ -30,7 +30,14 @@ func LibraryController() {
       return
     }
 
-    posts := l.FindDocumentsFor(user.(* personal.Person).Username)
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    person := user.(* personal.Person)
+    followers, _ := p.Following(person)
+
+    posts := l.FindDocumentsFor(append(followers, * person))
 
     ok( ctx, posts )
   })

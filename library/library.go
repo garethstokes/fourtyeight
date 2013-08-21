@@ -5,6 +5,7 @@ import (
   "labix.org/v2/mgo/bson"
   "time"
   "fmt"
+  "github.com/garethstokes/fourtyeight/personal"
 )
 
 type Post struct {
@@ -111,11 +112,17 @@ func (s * Library) FindOne( id string ) * Document {
   return document
 }
 
-func (s * Library) FindDocumentsFor(userId string) []Document {
+func (s * Library) FindDocumentsFor(users []personal.Person) []Document {
 
     var result = make([]Document, 100)
 
-    err := s.collection.Find(bson.M{"mainpost.ownerid": userId}).All(&result)
+    var queries = make([]bson.M, len(users))
+    for i := range users {
+      queries[i] = bson.M{"mainpost.ownerid": users[i].Username}
+    }
+
+    var query = bson.M{"$or": queries}
+    err := s.collection.Find(query).All(&result)
     if err != nil {
         panic(err)
     }
