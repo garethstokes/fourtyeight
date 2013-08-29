@@ -155,3 +155,20 @@ func (s * Library) FindAllFor(userId string) []Document {
 func (s * Library) DeleteOne(id string) error {
   return s.collection.Remove(bson.M{"key": bson.ObjectIdHex(id)})
 }
+
+func (s * Library) DeleteExpiredPosts() error {
+  job := &mgo.MapReduce{
+    Map:        "function() { emit(this.key, [this.dateCreated, this.expirationDelta]); }",
+    Reduce:     "function(key, values) { return values[0] + values[1]; }"
+  }
+
+  var result []struct { Id int "_id"; Value int }
+  _, err := s.collection.Find(nil).MapReduce(job, &result)
+  if err != nil {
+    return err
+  }
+
+  for _, item := range result {
+    fmt.Println(item.Value)
+  }
+}
