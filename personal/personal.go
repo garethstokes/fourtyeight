@@ -103,7 +103,7 @@ func (s * Personal) InitialiseSchema() {
     sql = "CREATE TABLE user ( user_id INT(11) PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, iterations INT, date_created BIGINT NOT NULL);"
     s.createTable( "user", sql );
 
-    sql = "CREATE TABLE follower (user_id INT(11) PRIMARY KEY AUTO_INCREMENT, follower_id INT(11) NOT NULL, CONSTRAINT `fk_follower_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`), CONSTRAINT `fk_follower_follower_id` FOREIGN KEY (`follower_id`) REFERENCES `user` (`user_id`), UNIQUE KEY `unique_followers` (`user_id`, `follower_id`));"
+    sql = "CREATE TABLE follower (user_id INT(11) NOT NULL, follower_id INT(11) NOT NULL, CONSTRAINT `fk_follower_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`), CONSTRAINT `fk_follower_follower_id` FOREIGN KEY (`follower_id`) REFERENCES `user` (`user_id`), UNIQUE KEY `unique_followers` (`user_id`, `follower_id`));"
     s.createTable( "follower", sql )
 
     sql = "CREATE TABLE IF NOT EXISTS waitinglist ( id INT(11) PRIMARY KEY AUTO_INCREMENT, email VARCHAR(255) NOT NULL, date_created TIMESTAMP );"
@@ -115,8 +115,8 @@ func (s * Personal) DropSchema() {
   s.log( "Personal.DropSchema" )
 
   s.run("DROP TABLE db_schema;");
-  s.run("DROP TABLE user;");
   s.run("DROP TABLE follower;");
+  s.run("DROP TABLE user;");
 }
 
 func (s * Personal) SaveToWaitingList(email string) error {

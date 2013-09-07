@@ -27,4 +27,5 @@ func main() {
 
   l.CreateFrom(& library.Post { "@garrydanger", "http://i.imgur.com/FudYBky.jpg", "Took me a while to figure out that hand-situation." }, 60 * 60 * 48)
   l.CreateFrom(& library.Post { "@shredder", "", "guys, i think that i might need a shave." }, 60 * 60 * 48)
+  l.CreateFrom(& library.Post { "@shredder", "", "guys, i think that i might need a shave." }, 1)
 }

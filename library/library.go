@@ -62,7 +62,7 @@ func (s * Library) CreateFrom(post * Post, expiry int64) * Document {
   key := bson.NewObjectId()
 
   document := new(Document)
-  document.Key = key.String()
+  document.Key = key
   document.MainPost = post
   document.Comments = make([]Post, 0)
   document.ExpirationDelta = expiry
@@ -158,21 +158,44 @@ func (s * Library) DeleteOne(id string) error {
   return s.collection.Remove(bson.M{"key": bson.ObjectIdHex(id)})
 }
 
+func (s * Library) DeleteOneWithObjectId(id bson.ObjectId) error {
+  return s.collection.Remove(bson.M{"key": id})
+}
+
 func (s * Library) DeleteExpiredPosts() error {
+  var m = `
+  function() {
+    var d = new Date();
+    var now = d.getTime() / 1000;
+    var expiration = this.datecreated + this.expirationdelta;
+
+    //emit(this.key, [now, expiration, expiration < now]);
+    emit(this.key, expiration < now);
+  }
+  `
+
   job := &mgo.MapReduce{
-    Map:        "function() { emit(this.key, [7, this.expirationDelta]); }",
-    Reduce:     "function(key, values) { return Array.sum(values[0]); }",
+    Map:        m,
+    Reduce:     "function(k, v) { return 7; }",
   }
 
-  var result []struct { Id string; Value int64 }
+  var result []struct { Id interface{} "_id"; IsExpired bool "value" }
+  //var result []map[string]interface{}
   _, err := s.collection.Find(nil).MapReduce(job, &result)
   if err != nil {
     return err
   }
 
-  for _, item := range result {
-    fmt.Println(item)
+  counter := 0
+
+  for _, post := range result {
+    if post.IsExpired {
+      counter++;
+      s.DeleteOneWithObjectId(post.Id.(bson.ObjectId))
+    }
   }
+
+  fmt.Printf("Deleted %d items\n", counter)
 
   return nil
 }

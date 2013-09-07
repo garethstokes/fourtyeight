@@ -40,9 +40,9 @@ func (s * Personal) Seed() {
   s.log( "\nSeeding Personal" )
   s.log( "================" )
 
-  garrydanger := s.seedSingleUser( make_garrydanger() )
-  shredder := s.seedSingleUser( make_shredder() )
-  caveman := s.seedSingleUser( make_caveman() )
+  garrydanger   := s.seedSingleUser( make_garrydanger() )
+  shredder      := s.seedSingleUser( make_shredder() )
+  caveman       := s.seedSingleUser( make_caveman() )
 
   s.AddFollowerTo( garrydanger, shredder )
   s.AddFollowerTo( garrydanger, caveman )
