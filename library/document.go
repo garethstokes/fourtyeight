@@ -6,7 +6,7 @@ import (
 )
 
 type Document struct {
-  Key interface{} `json:"key"`
+  Key string `json:"key"`
   MainPost * Post `json:"mainPost"`
   Comments []Post `json:"comments"`
   DateCreated int64 `json:"dateCreated"`

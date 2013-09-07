@@ -59,8 +59,10 @@ func (s * Library) CreateFrom(post * Post, expiry int64) * Document {
   fmt.Printf( "Library.CreateFrom :: %@\n", post )
   fmt.Printf( "Duration: %d\n", expiry)
 
+  key := bson.NewObjectId()
+
   document := new(Document)
-  document.Key = bson.NewObjectId()
+  document.Key = key.String()
   document.MainPost = post
   document.Comments = make([]Post, 0)
   document.ExpirationDelta = expiry
@@ -158,17 +160,19 @@ func (s * Library) DeleteOne(id string) error {
 
 func (s * Library) DeleteExpiredPosts() error {
   job := &mgo.MapReduce{
-    Map:        "function() { emit(this.key, [this.dateCreated, this.expirationDelta]); }",
-    Reduce:     "function(key, values) { return values[0] + values[1]; }"
+    Map:        "function() { emit(this.key, [7, this.expirationDelta]); }",
+    Reduce:     "function(key, values) { return Array.sum(values[0]); }",
   }
 
-  var result []struct { Id int "_id"; Value int }
+  var result []struct { Id string; Value int64 }
   _, err := s.collection.Find(nil).MapReduce(job, &result)
   if err != nil {
     return err
   }
 
   for _, item := range result {
-    fmt.Println(item.Value)
+    fmt.Println(item)
   }
+
+  return nil
 }

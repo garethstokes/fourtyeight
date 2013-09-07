@@ -3,6 +3,7 @@ package library
 import (
   "testing"
   "time"
+  "github.com/garethstokes/fourtyeight/personal"
 )
 
 func post() * Post {
@@ -12,6 +13,15 @@ func post() * Post {
   post.Text = "Took me a while to figure out that hand-situation."
 
   return post
+}
+
+func garrydanger() []personal.Person {
+  var result = make([]personal.Person,1)
+  garrydanger := new(personal.Person)
+  garrydanger.Username = "@garrydanger"
+
+  result[0] = garrydanger
+  return result
 }
 
 func TestInsertAndFind(t * testing.T) {
@@ -25,7 +35,7 @@ func TestInsertAndFind(t * testing.T) {
 
   // 48 hours
   library.CreateFrom(post, 60 * 60 * 48)
-  documents := library.FindDocumentsFor("@garrydanger")
+  documents := library.FindDocumentsFor(garrydanger())
 
   if len(documents) != 1 {
     t.Fatal("document not found.")
@@ -41,7 +51,7 @@ func TestExpiration(t * testing.T) {
 
   post := post()
   library.CreateFrom(post, 1)
-  documents := library.FindDocumentsFor("@garrydanger")
+  documents := library.FindDocumentsFor(garrydanger())
   if len(documents) != 1 {
     t.Fatal("document did not save.")
   }
@@ -50,7 +60,7 @@ func TestExpiration(t * testing.T) {
   }
 
   time.Sleep(2 * time.Second)
-  documents = library.FindDocumentsFor("@garrydanger")
+  documents = library.FindDocumentsFor(garrydanger())
 
   if len(documents) != 0 {
     t.Fatal("document did not expire.")

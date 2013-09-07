@@ -2,7 +2,6 @@ package main
 
 import (
 	"github.com/garethstokes/fourtyeight/library"
-  "fmt"
 )
 
 func main() {

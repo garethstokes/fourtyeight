@@ -106,7 +106,7 @@ func (s * Personal) InitialiseSchema() {
     sql = "CREATE TABLE follower (user_id INT(11) PRIMARY KEY AUTO_INCREMENT, follower_id INT(11) NOT NULL, CONSTRAINT `fk_follower_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`), CONSTRAINT `fk_follower_follower_id` FOREIGN KEY (`follower_id`) REFERENCES `user` (`user_id`), UNIQUE KEY `unique_followers` (`user_id`, `follower_id`));"
     s.createTable( "follower", sql )
 
-    sql = "CREATE TABLE waitinglist ( id INT(11) PRIMARY KEY AUTO_INCREMENT, email VARCHAR(255) NOT NULL, date_created TIMESTAMP );"
+    sql = "CREATE TABLE IF NOT EXISTS waitinglist ( id INT(11) PRIMARY KEY AUTO_INCREMENT, email VARCHAR(255) NOT NULL, date_created TIMESTAMP );"
     s.createTable( "waitinglist", sql )
   }
 }
@@ -114,8 +114,9 @@ func (s * Personal) InitialiseSchema() {
 func (s * Personal) DropSchema() {
   s.log( "Personal.DropSchema" )
 
-  s.run( fmt.Sprintf("DROP DATABASE %s;", s.Schema) );
-  s.run( fmt.Sprintf("CREATE DATABASE %s;", s.Schema) );
+  s.run("DROP TABLE db_schema;");
+  s.run("DROP TABLE user;");
+  s.run("DROP TABLE follower;");
 }
 
 func (s * Personal) SaveToWaitingList(email string) error {
