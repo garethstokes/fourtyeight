@@ -43,7 +43,7 @@ func LibraryController() {
   })
 
   // The public endpoint for the above action
-  web.Get("/library", func(ctx * web.Context) {
+  web.Get("/library/?", func(ctx * web.Context) {
     ctx.SetHeader("Content-Type", "application/json", true);
 
     l := library.Store()
