@@ -142,7 +142,7 @@ func (s * Library) FindDocumentsFor(users []personal.Person) []Document {
     return documents
 }
 
-func (s * Library) FindAllFor(userId string) []Document {
+func (s * Library) FindPublicDocuments(page int) []Document {
 
     var result = make([]Document, 100)
 

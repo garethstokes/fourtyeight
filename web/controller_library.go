@@ -26,7 +26,7 @@ func LibraryController() {
 
     user := cache.Get( token )
     if user == nil {
-      apiError( ctx, "Invalid token" )
+      apiError( ctx, "INVALID_TOKEN" )
       return
     }
 
@@ -38,6 +38,19 @@ func LibraryController() {
     followers, _ := p.Following(person)
 
     posts := l.FindDocumentsFor(append(followers, * person))
+
+    ok( ctx, posts )
+  })
+
+  // The public endpoint for the above action
+  web.Get("/library", func(ctx * web.Context) {
+    ctx.SetHeader("Content-Type", "application/json", true);
+
+    l := library.Store()
+    l.OpenSession()
+    defer l.CloseSession()
+
+    posts := l.FindPublicDocuments(1)
 
     ok( ctx, posts )
   })
