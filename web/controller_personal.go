@@ -180,6 +180,14 @@ func PersonalController() {
     u.Email = params.Email
     u.AvatarUrl = params.AvatarUrl
     fmt.Printf("%@\n", u)
+
+    validations := u.Validate()
+    if len(validations) > 0 {
+      fmt.Println(validations)
+      apiError(ctx, validations)
+      return
+    }
+
     user, error := p.Create(u, params.Password)
     if error != nil {
       apiError( ctx, error.Error() )

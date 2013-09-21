@@ -11,7 +11,7 @@ type ApiResponse struct {
 	Result interface{} `json:"result"`
 }
 
-func apiError(ctx * web.Context, message string) {
+func apiError(ctx * web.Context, message interface{}) {
 	response := ApiResponse {
 		Ok: false,
 		Result: message,

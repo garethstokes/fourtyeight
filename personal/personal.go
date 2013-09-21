@@ -14,6 +14,19 @@ type Person struct {
   DateCreated int64 `json:"dateCreated"`
 }
 
+func (p * Person) Validate() []string {
+  err := make([]string, 0)
+  if len(p.Username) == 1 {
+    err = append(err, "username: missing")
+  }
+
+  if len(p.Email) == 0 {
+    err = append(err, "email: missing")
+  }
+
+  return err
+}
+
 type PersonAuthorisation struct {
   Password string
   Salt string
