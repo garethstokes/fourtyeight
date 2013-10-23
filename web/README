@@ -9,7 +9,7 @@ curl localhost:8080/user/{name}
 # for example, localhost:8080/user/garrydanger
 
 = list documents
-curl localhost:8080/library/{token}
+curl localhost:8080/library/{token}/{ts}
 
 = create document
 curl -XPOST localhost:8080/library/U3lHibjx9f8TzaHyXmkLug==/document \
