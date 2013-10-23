@@ -114,13 +114,16 @@ func (s * Library) FindOne( id string ) * Document {
   return document
 }
 
-func (s * Library) FindDocumentsFor(users []personal.Person) []Document {
+func (s * Library) FindDocumentsFor(users []personal.Person, timestamp int) []Document {
 
     var result = make([]Document, 100)
 
     var queries = make([]bson.M, len(users))
     for i := range users {
-      queries[i] = bson.M{"mainpost.ownerid": users[i].Username}
+      queries[i] = bson.M{ "$and": []bson.M{
+                      bson.M{"mainpost.ownerid": users[i].Username},
+                      bson.M{"datecreated": bson.M{ "$gt": timestamp }},
+                   }}
     }
 
     var query = bson.M{"$or": queries}

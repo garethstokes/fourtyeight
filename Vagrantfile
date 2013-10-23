@@ -10,7 +10,7 @@ Vagrant.configure("2") do |config|
   config.ssh.forward_agent = true
 
   #config.vm.network :private_network, ip: "192.168.33.10"
-  config.vm.network :forwarded_port, guest: 80, host: 8080
+  config.vm.network :forwarded_port, guest: 80, host: 8000
 
   #config.vm.synced_folder "./src", "/home/vagrant/projects"
   vm_golang_folder = "/golang/src/github.com/garethstokes/fourtyeight"

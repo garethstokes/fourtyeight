@@ -6,7 +6,7 @@ import (
 	"strings"
 	"crypto/md5"
 	"io"
-	"encoding/base64"
+	"encoding/base32"
 	"bytes"
 )
 
@@ -19,20 +19,20 @@ type Password struct {
 	Iterations int
 }
 
-func toBase64(input []byte) (string) {
+func toBase32(input []byte) (string) {
 	output := &bytes.Buffer{}
 
-	encoder := base64.NewEncoder(base64.StdEncoding, output)
+	encoder := base32.NewEncoder(base32.StdEncoding, output)
 	encoder.Write(input)
 	encoder.Close()
 
 	return output.String()
 }
 
-func fromBase64(input string) ([]byte) {
+func fromBase32(input string) ([]byte) {
 	output := &bytes.Buffer{}
 
-	decoder := base64.NewDecoder(base64.StdEncoding, output)
+	decoder := base32.NewDecoder(base32.StdEncoding, output)
 	decoder.Read([]byte(input))
 
 	return output.Bytes()
@@ -55,7 +55,7 @@ func ComputeWithSalt(value string, iterations int, salt string) (Password) {
 	}
 
 	password := Password{
-		Hash: toBase64([]byte(value)),
+		Hash: toBase32([]byte(value)),
 		Salt: salt,
 		Iterations: iterations,
 	}

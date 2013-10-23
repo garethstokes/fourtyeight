@@ -2,6 +2,8 @@ package main
 
 import (
   "fmt"
+  "time"
+  "strconv"
 	"encoding/json"
 	"github.com/hoisie/web"
 	"github.com/garethstokes/fourtyeight/library"
@@ -12,12 +14,12 @@ import (
 func LibraryController() {
 
   // GET Documents from the library for a user
-  // Example: /library/24332d32e2134231432r
+  // Example: /library/{USER_TOKEN}/{TIMESTAMP}
   //
   // will find all relevent documents for a user, ordered
   // by the create_created
   //
-  web.Get("/library/(.+)", func(ctx * web.Context, token string) {
+  web.Get("/library/([0-9A-Z]+======)(/[0-9]+)?", func(ctx * web.Context, token string, timestamp string) {
     ctx.SetHeader("Content-Type", "application/json", true);
 
     l := library.Store()
@@ -30,6 +32,20 @@ func LibraryController() {
       return
     }
 
+    // timstamp
+    if len(timestamp) == 0 {
+      var daysAgo int64 = 60 * 60 * 24 * 7 // 7 days ago
+      var nowPlusDaysAgo int = int(time.Now().UTC().Unix() - daysAgo)
+      timestamp = "/" + strconv.Itoa(nowPlusDaysAgo)
+    }
+
+    var ts, _ = strconv.Atoi(timestamp[1:])
+
+    fmt.Println(time.Unix(int64(ts), 0))
+    fmt.Println(time.Now())
+
+    fmt.Println(ts)
+
     p := personal.Store()
     p.OpenSession()
     defer p.CloseSession()
@@ -37,7 +53,7 @@ func LibraryController() {
     person := user.(* personal.Person)
     followers, _ := p.Following(person)
 
-    posts := l.FindDocumentsFor(append(followers, * person))
+    posts := l.FindDocumentsFor(append(followers, * person), ts)
 
     ok( ctx, posts )
   })

@@ -1,6 +1,6 @@
 
 = login
-curl -XPOST localhost:8080/user/login \
+curl -XPOST localhost:8000/user/login \
   -H "Content-Type: application/json" \
   -d '{ "name":"garrydanger", "password":"bobafett" }'
 
