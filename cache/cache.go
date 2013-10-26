@@ -4,16 +4,14 @@ import "fmt"
 
 var db = make( map[string] interface{} )
 
-func Get(key string) interface{} {
+func Get(namespace string, key string) interface{} {
+  key = namespace + "." + key
   fmt.Printf( "cache.Get :: %s\n", key )
   return db[key]
 }
 
-func Set(key string, value interface{}) {
+func Set(namespace string, key string, value interface{}) {
+  key = namespace + "." + key
   fmt.Printf( "cache.Set :: %s\n", key )
-  db[key] = value
-}
-
-func SetWithTimeout(key string, value interface{}, timeout int64) {
   db[key] = value
 }

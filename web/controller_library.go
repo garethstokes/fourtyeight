@@ -26,7 +26,7 @@ func LibraryController() {
     l.OpenSession()
     defer l.CloseSession()
 
-    user := cache.Get( token )
+    user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "INVALID_TOKEN" )
       return
@@ -83,7 +83,7 @@ func LibraryController() {
   web.Post("/library/(.+)/document", func(ctx * web.Context, token string) {
     ctx.SetHeader("Content-Type", "application/json", true)
 
-    user := cache.Get( token )
+    user := cache.Get("users", token ).(* personal.Person)
     if user == nil {
       apiError( ctx, "Invalid token" )
       return
@@ -102,11 +102,28 @@ func LibraryController() {
     defer l.CloseSession()
 
     p := new(library.Post)
-    p.OwnerId = user.(* personal.Person).Username
+    p.OwnerId = user.Username
     p.Image = post.Image
     p.Text = post.Text
 
     document := l.CreateFrom( p, post.Expiry )
+
+    // loop through followers and send them 
+    // all a notifiation
+    personalStore := personal.Store()
+    personalStore.OpenSession()
+    defer personalStore.CloseSession()
+
+    following, _ := personalStore.FollowersFor(user)
+
+    for _, follower := range following {
+      fmt.Println("checking push notification for: " + follower.Username)
+
+      deviceToken := cache.Get("apns", follower.Username)
+      if deviceToken != nil {
+        sendPushNotificationTo(deviceToken.(string), user.Username)
+      }
+    }
 
     ok( ctx, document )
   })
@@ -130,7 +147,7 @@ func LibraryController() {
   web.Post("/library/(.+)/document/(.+)/post", func(ctx * web.Context, token string, documentId string) {
     ctx.SetHeader("Content-Type", "application/json", true)
 
-    user := cache.Get( token )
+    user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
       return
@@ -158,7 +175,7 @@ func LibraryController() {
   web.Post("/library/(.+)/delete/(.+)", func(ctx * web.Context, token string, documentId string) {
     ctx.SetHeader("Content-Type", "application/json", true)
 
-    user := cache.Get(token)
+    user := cache.Get("users", token)
     if user == nil {
       apiError( ctx, "Invalid token" )
       return

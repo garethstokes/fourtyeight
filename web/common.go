@@ -2,8 +2,10 @@ package main
 
 import (
 	"fmt"
+  "os"
 	"encoding/json"
   "github.com/hoisie/web"
+  "github.com/garethstokes/fourtyeight/apns"
 )
 
 type ApiResponse struct {
@@ -36,4 +38,24 @@ func toJson(item interface{}) []byte {
 		fmt.Println("error:", err)
 	}
 	return b;
+}
+
+func sendPushNotificationTo(token string, from string) {
+  payload := apns.NewPayload()
+  payload.Alert = from + " has just dropped a new message."
+
+  pn := apns.NewPushNotification()
+  pn.DeviceToken = token
+  pn.AddPayload(payload)
+
+  var wd, _ = os.Getwd()
+
+  client := apns.NewClient(
+    "gateway.sandbox.push.apple.com:2195",
+    wd + "/apns/keys/apns-dev-cert.pem",
+    wd + "/apns/keys/apns-dev-key-noenc.pem",
+  )
+  client.Send(pn)
+
+  //alert, _ := pn.PayloadString()
 }

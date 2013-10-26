@@ -67,7 +67,7 @@ func PersonalController() {
 
     hash := passwords.Compute( name + params.Password )
 
-    cache.Set( hash.Hash, user )
+    cache.Set("users", hash.Hash, user )
 
     ok( ctx, map[string] interface{} {
       "token": hash.Hash,
@@ -82,7 +82,7 @@ func PersonalController() {
   web.Get("/me/(.+)", func(ctx * web.Context, token string) {
     ctx.SetHeader("Content-Type", "application/json", true)
 
-    user := cache.Get( token )
+    user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
       return
@@ -94,7 +94,7 @@ func PersonalController() {
   web.Get("/user/(.+)/following", func(ctx * web.Context, token string) {
     ctx.SetHeader("Context-Type", "application/json", true)
 
-    user := cache.Get( token )
+    user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
       return
@@ -111,7 +111,7 @@ func PersonalController() {
   web.Get("/user/(.+)/followers", func(ctx * web.Context, token string) {
     ctx.SetHeader("Context-Type", "application/json", true)
 
-    user := cache.Get( token )
+    user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
       return
@@ -128,7 +128,7 @@ func PersonalController() {
   web.Post("/user/(.+)/follow/(.+)", func(ctx * web.Context, token string, toFollow string) {
     ctx.SetHeader("Context-Type", "application/json", true)
 
-    user := cache.Get( token )
+    user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
       return
@@ -195,7 +195,7 @@ func PersonalController() {
     }
 
     hash := passwords.Compute( user.Username + params.Password )
-    cache.Set(hash.Hash, user)
+    cache.Set("users", hash.Hash, user)
 
     ok( ctx, map[string] interface{} {
       "token": hash.Hash,
