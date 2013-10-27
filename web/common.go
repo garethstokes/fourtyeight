@@ -41,6 +41,7 @@ func toJson(item interface{}) []byte {
 }
 
 func sendPushNotificationTo(token string, from string) {
+  fmt.Println("sending push notification: ( " + token + " )")
   payload := apns.NewPayload()
   payload.Alert = from + " has just dropped a new message."
 
