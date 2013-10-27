@@ -3,7 +3,7 @@ var post = require('./post');
 module.exports = function(callback) {
 
   var user = {
-    name: 'garrydanger',
+    name: 'caveman',
     password: 'bobafett'
   };
 
