@@ -41,5 +41,7 @@ func ApnsController() {
     //
     // TODO: store the array of items with some sort of timeout
     cache.Set("apns", user.Username, params.DeviceToken)
+
+    ok( ctx, params.DeviceToken )
   })
 }
