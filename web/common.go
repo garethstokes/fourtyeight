@@ -56,7 +56,11 @@ func sendPushNotificationTo(token string, from string) {
     wd + "/apns/keys/apns-dev-cert.pem",
     wd + "/apns/keys/apns-dev-key-noenc.pem",
   )
-  client.Send(pn)
+  resp := client.Send(pn)
 
-  //alert, _ := pn.PayloadString()
+  alert, _ := pn.PayloadString()
+
+  fmt.Println("  Alert:", alert)
+  fmt.Println("Success:", resp.Success)
+  fmt.Println("  Error:", resp.Error)
 }

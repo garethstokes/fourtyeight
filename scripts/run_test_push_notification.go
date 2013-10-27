@@ -18,21 +18,22 @@ func main() {
   var wd, _ = os.Getwd()
 
   cert, err := tls.LoadX509KeyPair(
-    wd + "/apns-dev-cert.pem",
-    wd + "/apns-dev-key-noenc.pem",
+    wd + "/../apns/certs/apns-dev-cert.pem",
+    wd + "/../apns/certs/apns-dev-key-noenc.pem",
   )
 
   fmt.Println(cert)
   fmt.Println(err)
 
   if err != nil {
+    fmt.Println("fucking errors man")
     return
   }
 
   client := apns.NewClient(
     "gateway.sandbox.push.apple.com:2195",
-    wd + "/apns-dev-cert.pem",
-    wd + "/apns-dev-key-noenc.pem",
+    wd + "/apns/certs/apns-dev-cert.pem",
+    wd + "/apns/certs/apns-dev-key-noenc.pem",
   )
   resp := client.Send(pn)
 
