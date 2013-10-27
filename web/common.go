@@ -53,8 +53,8 @@ func sendPushNotificationTo(token string, from string) {
 
   client := apns.NewClient(
     "gateway.sandbox.push.apple.com:2195",
-    wd + "/apns/keys/apns-dev-cert.pem",
-    wd + "/apns/keys/apns-dev-key-noenc.pem",
+    wd + "/keys/apns-dev-cert.pem",
+    wd + "/keys/apns-dev-key-noenc.pem",
   )
   resp := client.Send(pn)
 
