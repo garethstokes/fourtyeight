@@ -1,6 +1,7 @@
 var http  = require('http'),
     login = require('./lib/login'),
-    post  = require('./lib/post');
+    post  = require('./lib/post'),
+    conf  = require('./lib/config');
 
 /* 
 
@@ -14,8 +15,8 @@ login(function(result) {
   console.log(result);
 
   var options = {
-    host: 'localhost',
-    port: 8000,
+    host: conf.host,
+    port: conf.port,
     path: '/library/' + result.token + '/document',
     method: 'POST'
   };

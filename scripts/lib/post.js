@@ -26,7 +26,7 @@ module.exports = function(options, data, callback) {
       var response = JSON.parse(responseString);
       if (response.ok === false) {
         console.log('error');
-        console.log(result);
+        console.log(response);
         return;
       }
       callback(response.result);

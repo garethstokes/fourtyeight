@@ -83,11 +83,13 @@ func LibraryController() {
   web.Post("/library/(.+)/document", func(ctx * web.Context, token string) {
     ctx.SetHeader("Content-Type", "application/json", true)
 
-    user := cache.Get("users", token ).(* personal.Person)
+    user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
       return
     }
+
+    person := user.(* personal.Person)
 
     post := new(PostWithExpiry)
     err := json.NewDecoder(ctx.Request.Body).Decode(&post)
@@ -102,7 +104,7 @@ func LibraryController() {
     defer l.CloseSession()
 
     p := new(library.Post)
-    p.OwnerId = user.Username
+    p.OwnerId = person.Username
     p.Image = post.Image
     p.Text = post.Text
 
@@ -114,14 +116,14 @@ func LibraryController() {
     personalStore.OpenSession()
     defer personalStore.CloseSession()
 
-    following, _ := personalStore.FollowersFor(user)
+    following, _ := personalStore.FollowersFor(person)
 
     for _, follower := range following {
       fmt.Println("checking push notification for: " + follower.Username)
 
       deviceToken := cache.Get("apns", follower.Username)
       if deviceToken != nil {
-        sendPushNotificationTo(deviceToken.(string), user.Username)
+        sendPushNotificationTo(deviceToken.(string), person.Username)
       }
     }
 

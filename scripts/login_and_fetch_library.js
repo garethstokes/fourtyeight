@@ -1,13 +1,14 @@
 var http  = require('http'),
     login = require('./lib/login'),
-    get   = require('./lib/get');
+    get   = require('./lib/get'),
+    conf  = require('./lib/config');
 
 login(function(result) {
   console.log(result);
 
   var options = {
-    host: 'localhost',
-    port: 8000,
+    host: conf.host,
+    port: conf.port,
     path: '/library/' + result.token
   };
 

@@ -1,4 +1,5 @@
-var post = require('./post');
+var post = require('./post'),
+    conf = require('./config');
 
 module.exports = function(callback) {
 
@@ -8,8 +9,8 @@ module.exports = function(callback) {
   };
 
   var options = {
-    host: 'localhost',
-    port: 8000,
+    host: conf.host,
+    port: conf.port,
     path: '/user/login',
     method: 'POST'
   };

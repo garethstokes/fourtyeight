@@ -3,8 +3,8 @@ var http  = require('http'),
     post  = require('./lib/post'),
     conf  = require('./lib/config');
 
-login(function(result) {
-  console.log(result);
+// DONT LOG IN
+(function() {
 
   var options = {
     host: conf.host,
@@ -14,7 +14,7 @@ login(function(result) {
   };
 
   var message = { 
-    token: result.token,
+    token: "invalid_token",
     deviceToken: "abcd"
   };
 
@@ -22,4 +22,4 @@ login(function(result) {
     console.log(response);
   });
 
-});
+})();

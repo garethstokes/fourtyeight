@@ -28,12 +28,15 @@ func ApnsController() {
     }
 
     // check if user is logged in
-    user := cache.Get("users", params.Token).(* personal.Person)
-    if user == nil {
+    var user * personal.Person
+    person := cache.Get("users", params.Token)
+    if person == nil {
       apiError( ctx, "INVALID_TOKEN" )
       fmt.Println("INVALID_USER_TOKEN")
       return
     }
+
+    user = person.(* personal.Person)
 
     // set the cache
     //
