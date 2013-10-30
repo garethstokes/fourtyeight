@@ -123,7 +123,7 @@ func LibraryController() {
 
       deviceToken := cache.Get("apns", follower.Username)
       if deviceToken != nil {
-        sendPushNotificationTo(deviceToken.(string), person.Username)
+        go sendPushNotificationTo(deviceToken.(string), person.Username)
       }
     }
 
