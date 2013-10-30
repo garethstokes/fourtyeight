@@ -26,7 +26,7 @@ func toBase32(input []byte) (string) {
 	encoder.Write(input)
 	encoder.Close()
 
-	return output.String()
+	return output.String()[:25]
 }
 
 func fromBase32(input string) ([]byte) {

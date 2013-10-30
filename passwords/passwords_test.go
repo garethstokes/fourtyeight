@@ -2,7 +2,7 @@ package passwords
 
 import (
 	"testing"
-	_ "fmt"
+	"fmt"
 )
 
 func TestCompute(t * testing.T) {
@@ -12,4 +12,6 @@ func TestCompute(t * testing.T) {
 	if a.Hash != password.Hash {
 		t.Fatal("nonderministic hash detected")
 	}
+
+  fmt.Println(a)
 }
