@@ -19,7 +19,7 @@ func LibraryController() {
   // will find all relevent documents for a user, ordered
   // by the create_created
   //
-  web.Get("/library/([0-9A-Z]+{26})(/[0-9]+)?", func(ctx * web.Context, token string, timestamp string) {
+  web.Get("/library/([0-9A-Z]+{25})(/[0-9]+)?", func(ctx * web.Context, token string, timestamp string) {
     ctx.SetHeader("Content-Type", "application/json", true);
 
     l := library.Store()
