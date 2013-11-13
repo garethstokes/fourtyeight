@@ -12,6 +12,7 @@ type Post struct {
   OwnerId string `json:"ownerId"`
   Image string `json:"imageUrl"`
   Text string `json:"text"`
+  DateCreated int64 `json:"dateCreated"`
 }
 
 type Library struct {

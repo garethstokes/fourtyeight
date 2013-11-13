@@ -107,6 +107,7 @@ func LibraryController() {
     p.OwnerId = person.Username
     p.Image = post.Image
     p.Text = post.Text
+    p.DateCreated = time.Now().UTC().Unix()
 
     document := l.CreateFrom( p, post.Expiry )
 
@@ -164,7 +165,8 @@ func LibraryController() {
     }
 
     post.OwnerId = user.(* personal.Person).Username
-
+    post.DateCreated = time.Now().UTC().Unix()
+    
     l := library.Store()
     l.OpenSession()
     defer l.CloseSession()
