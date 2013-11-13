@@ -1,4 +1,4 @@
 module.exports = {
-  host: 'shortfuse.io',
-  port: 80
+  host: 'localhost',
+  port: 8000
 };
