@@ -5,6 +5,12 @@ import (
   "fmt"
 )
 
+/*
+  TODO: create a lastUpdated field and
+        update it on:
+            - adding a comment
+            - liking a post
+ */
 type Document struct {
   Key interface{} `json:"key"`
   MainPost * Post `json:"mainPost"`
