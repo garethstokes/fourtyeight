@@ -8,11 +8,18 @@ import (
   "github.com/garethstokes/fourtyeight/personal"
 )
 
+/*
+  TODO: like api changes
+      - include the mongo key with all posts, similar to a document
+      - include likedby and followers for a post
+*/
 type Post struct {
   OwnerId string `json:"ownerId"`
   Image string `json:"imageUrl"`
   Text string `json:"text"`
   DateCreated int64 `json:"dateCreated"`
+  // Followers []string 
+  // LikedBy []string
 }
 
 type Library struct {
