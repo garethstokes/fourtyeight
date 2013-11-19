@@ -10,4 +10,4 @@ go get -v
 
 echo "running webserver"
 echo "================="
-go run *.go 2>&1 >> log/web.log
+go run *.go
