@@ -1,5 +1,10 @@
 #!/bin/sh
 
+if [[ -n "$GO_ENV" && $GO_ENV == "production" ]]; then
+  echo "set to production"
+  cd /go/src/github.com/garethstokes/fourtyeight
+fi
+
 LOCAL="$(git rev-parse master)"
 REMOTE="$(git rev-parse origin/master)"
 
