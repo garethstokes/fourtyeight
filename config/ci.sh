@@ -13,8 +13,8 @@ echo "$(git reset HEAD --hard)"
 LOCAL="$(git rev-parse master)"
 REMOTE="$(git rev-parse origin/master)"
 
-echo $LOCAL
-echo $REMOTE
+echo "$LOCAL"
+echo "$REMOTE"
 
 if [ "$LOCAL" != "$REMOTE" ]; then
   echo "updating repository"
@@ -24,4 +24,5 @@ if [ "$LOCAL" != "$REMOTE" ]; then
   echo "$(god restart webserver)"
 fi
 
+echo "local: $(git rev-parse master)"
 echo "Dropped out, yo"
