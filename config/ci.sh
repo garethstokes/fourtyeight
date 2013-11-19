@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -v
+
 if [[ -n "$GO_ENV" && $GO_ENV == "production" ]]; then
   echo "set to production"
   cd /go/src/github.com/garethstokes/fourtyeight
@@ -13,8 +15,8 @@ echo $REMOTE
 
 if [ "$LOCAL" != "$REMOTE" ]; then
   echo "updating repository"
-  git pull origin master
+  echo "$(git pull origin master)"
 
   echo "restarting server"
-  god restart webserver
+  echo "$(god restart webserver)"
 fi
