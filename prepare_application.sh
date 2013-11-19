@@ -11,8 +11,5 @@ echo "fetching libraries"
 cd migrations
 go get -v
 
-echo "creating schemas"
-go run create_schema.go
-
-echo "seeding databases"
-go run seed.go
+echo "running migrations"
+migrations/reset.sh
