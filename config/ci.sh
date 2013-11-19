@@ -2,6 +2,8 @@
 
 set -v
 
+echo "Dropping the CI like a bunch of motherfuckers!"
+
 if [[ -n "$GO_ENV" && $GO_ENV == "production" ]]; then
   echo "set to production"
   cd /go/src/github.com/garethstokes/fourtyeight
@@ -20,3 +22,5 @@ if [ "$LOCAL" != "$REMOTE" ]; then
   echo "restarting server"
   echo "$(god restart webserver)"
 fi
+
+echo "Dropped out, yo"
