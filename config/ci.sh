@@ -1,8 +1,5 @@
 #!/bin/sh
 
-echo "changing dir to project root"
-cd ../
-
 LOCAL="$(git rev-parse master)"
 REMOTE="$(git rev-parse origin/master)"
 
