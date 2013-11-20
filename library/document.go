@@ -17,6 +17,7 @@ type Document struct {
   Comments []Post `json:"comments"`
   DateCreated int64 `json:"dateCreated"`
   ExpirationDelta int64 `json:"expirationDelta"`
+  LastModified int64 `json:"lastModified"`
 }
 
 func (d * Document) expired() bool {

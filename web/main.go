@@ -11,5 +11,5 @@ func main() {
   LibraryController()
   ApnsController()
 
-  web.Run("0.0.0.0:8080")
+  web.Run("0.0.0.0:8000")
 }

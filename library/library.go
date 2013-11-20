@@ -17,9 +17,8 @@ type Post struct {
   OwnerId string `json:"ownerId"`
   Image string `json:"imageUrl"`
   Text string `json:"text"`
-  DateCreated int64 `json:"dateCreated"`
-  // Followers []string 
-  // LikedBy []string
+  DateCreated int64 `json:"dateCreated"` 
+  LikedBy []string `json:"likedBy"`
 }
 
 type Library struct {
@@ -75,6 +74,7 @@ func (s * Library) CreateFrom(post * Post, expiry int64) * Document {
   document.Comments = make([]Post, 0)
   document.ExpirationDelta = expiry
   document.DateCreated = time.Now().UTC().Unix()
+  document.LastModified = time.Now().UTC().Unix()
 
   err := s.collection.Insert(document)
   if err != nil {
@@ -97,6 +97,7 @@ func (s * Library) AddPost(post * Post, documentKey string) * Document {
   err :=s.collection.Find(bson.M{"key": key}).One( &document )
   if err == nil {
     document.Comments = append( document.Comments, *post )
+    document.LastModified = time.Now().UTC().Unix()
     s.collection.Update( bson.M{"key": key}, document )
   } else {
     fmt.Printf( "ERROR: %s\n", err.Error() )
@@ -117,6 +118,37 @@ func (s * Library) FindOne( id string ) * Document {
   if err != nil {
     fmt.Printf( "ERROR: %s\n", err.Error() )
     return nil
+  }
+
+  return document
+}
+
+func (s * Library) LikePost(id string, position int, username string) * Document{
+  fmt.Printf("LikePost :: Hi fucking llo\n")
+  var document = s.FindOne(id)
+  if document == nil{
+    fmt.Printf("LikePost :: Returning nil\n")
+    return nil
+  }
+   if document.Comments == nil{
+    fmt.Printf("LikePost :: Comments is nil\n")
+    return nil
+  }
+
+  fmt.Printf("LikePost :: Comments is %d\n", len(document.Comments))
+  
+
+  if len(document.Comments) > position {
+    fmt.Printf("if so\n")
+    var post = document.Comments[position]
+
+   
+    
+    post.LikedBy = append( post.LikedBy, username )
+    fmt.Printf("LikePost :: LikedBy is %d\n", len(post.LikedBy))
+    document.Comments[position] = post;
+    s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document )
+    fmt.Printf("if so done\n")
   }
 
   return document
