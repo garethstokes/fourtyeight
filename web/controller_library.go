@@ -82,7 +82,7 @@ func LibraryController() {
   }
   web.Post("/library/(.+)/document", func(ctx * web.Context, token string) {
     ctx.SetHeader("Content-Type", "application/json", true)
-
+  fmt.Println("POST2 :: Document")
     user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
@@ -149,7 +149,7 @@ func LibraryController() {
 
   web.Post("/library/(.+)/document/(.+)/post", func(ctx * web.Context, token string, documentId string) {
     ctx.SetHeader("Content-Type", "application/json", true)
-
+    fmt.Println("POST :: Document")
     user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
@@ -159,9 +159,9 @@ func LibraryController() {
     post := new( library.Post )
     err := json.NewDecoder(ctx.Request.Body).Decode(&post)
     if err != nil {
-			apiError(ctx, "incorrect parameters found")
+      apiError(ctx, "incorrect parameters found")
       fmt.Printf( "ERROR: %s\n", err.Error() )
-			return
+      return
     }
 
     post.OwnerId = user.(* personal.Person).Username
@@ -172,6 +172,42 @@ func LibraryController() {
     defer l.CloseSession()
 
     document := l.AddPost( post, documentId )
+
+    ok( ctx, document )
+  })
+
+  web.Post("/library/(.+)/document/(.+)/like(/[0-9]+)?", func(ctx * web.Context, token string, documentId string, position string) {
+    fmt.Printf("LIKE :: Document \n")
+   
+    ctx.SetHeader("Content-Type", "application/json", true)
+    
+    if len(position) == 0 {
+      position = "/0"
+    }
+    fmt.Printf("\nLIKE :: Document position %s " , position)
+
+    var posi, _ = strconv.Atoi(position[1:]) 
+    
+    fmt.Printf("\nLIKE :: Document posi %d " , posi)
+
+    user := cache.Get("users", token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+ 
+    var usrName = user.(* personal.Person).Username
+
+    l := library.Store()
+    l.OpenSession()
+    defer l.CloseSession()
+  
+    fmt.Printf("\nLIKE :: Document  " +documentId)
+    // fmt.Printf("LIKE :: Position %d\n", position)
+    fmt.Printf("\nLIKE :: usrName " +usrName)
+  
+
+    document := l.LikePost( documentId , posi, usrName)
 
     ok( ctx, document )
   })

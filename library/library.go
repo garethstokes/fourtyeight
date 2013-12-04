@@ -130,27 +130,35 @@ func (s * Library) LikePost(id string, position int, username string) * Document
     fmt.Printf("LikePost :: Returning nil\n")
     return nil
   }
-   if document.Comments == nil{
-    fmt.Printf("LikePost :: Comments is nil\n")
-    return nil
-  }
-
-  fmt.Printf("LikePost :: Comments is %d\n", len(document.Comments))
   
-
-  if len(document.Comments) > position {
-    fmt.Printf("if so\n")
-    var post = document.Comments[position]
-
-   
-    
-    post.LikedBy = append( post.LikedBy, username )
-    fmt.Printf("LikePost :: LikedBy is %d\n", len(post.LikedBy))
-    document.Comments[position] = post;
+  if(position <= 0){
+    fmt.Printf("liking the main post\n")
+    var mainPost = document.MainPost
+    mainPost.LikedBy = append( mainPost.LikedBy, username )
+    document.MainPost = mainPost;
     s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document )
-    fmt.Printf("if so done\n")
-  }
+  
+  }else{
+    position--;
+    fmt.Printf("liking %dth comment as %s\n", position, username)
+    if document.Comments == nil{
+      fmt.Printf("LikePost :: Comments is nil, cancelling the like\n")
+      return nil
+    }
 
+    fmt.Printf("LikePost :: Comments is %d\n", len(document.Comments))
+    
+    if len(document.Comments) > position {
+      fmt.Printf("if so\n")
+      var post = document.Comments[position]
+
+      post.LikedBy = append( post.LikedBy, username )
+      fmt.Printf("LikePost :: LikedBy is %d\n", len(post.LikedBy))
+      document.Comments[position] = post;
+      s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document )
+      fmt.Printf("if so done\n")
+    }
+  }
   return document
 }
 
