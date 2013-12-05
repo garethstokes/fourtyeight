@@ -212,6 +212,42 @@ func LibraryController() {
     ok( ctx, document )
   })
 
+  web.Post("/library/(.+)/document/(.+)/unlike(/[0-9]+)?", func(ctx * web.Context, token string, documentId string, position string) {
+    fmt.Printf("UNLIKE :: Document \n")
+   
+    ctx.SetHeader("Content-Type", "application/json", true)
+    
+    if len(position) == 0 {
+      position = "/0"
+    }
+    fmt.Printf("\nUNLIKE :: Document position %s " , position)
+
+    var posi, _ = strconv.Atoi(position[1:]) 
+    
+    fmt.Printf("\nUNLIKE :: Document posi %d " , posi)
+
+    user := cache.Get("users", token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+ 
+    var usrName = user.(* personal.Person).Username
+
+    l := library.Store()
+    l.OpenSession()
+    defer l.CloseSession()
+  
+    fmt.Printf("\nUNLIKE :: Document  " +documentId)
+    // fmt.Printf("LIKE :: Position %d\n", position)
+    fmt.Printf("\nUNLIKE :: usrName " +usrName)
+  
+
+    document := l.UnlikePost( documentId , posi, usrName)
+
+    ok( ctx, document )
+  })
+
   web.Post("/library/(.+)/delete/(.+)", func(ctx * web.Context, token string, documentId string) {
     ctx.SetHeader("Content-Type", "application/json", true)
 

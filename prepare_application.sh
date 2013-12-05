@@ -12,4 +12,4 @@ cd migrations
 go get -v
 
 echo "running migrations"
-migrations/reset.sh
+./reset.sh

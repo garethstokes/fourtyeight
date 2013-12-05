@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/garethstokes/fourtyeight/personal"
-  "fmt"
+  	"fmt"
 )
 
 func main() {

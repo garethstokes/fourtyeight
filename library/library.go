@@ -162,6 +162,67 @@ func (s * Library) LikePost(id string, position int, username string) * Document
   return document
 }
 
+
+func (s * Library) UnlikePost(id string, position int, username string) * Document{
+  fmt.Printf("UnlikePost :: Starting\n")
+  var document = s.FindOne(id)
+  if document == nil{
+    fmt.Printf("UnlikePost :: Returning nil couldnt find the document\n")
+    return nil
+  }
+  
+  if(position <= 0){
+    fmt.Printf("unliking the main post\n")
+    var mainPost = document.MainPost
+
+    var filteredLikedBy = make([]string, len(mainPost.LikedBy))
+
+    for _, value := range mainPost.LikedBy{
+      if(value != username){
+        filteredLikedBy = append(filteredLikedBy, value)
+      }else{
+        fmt.Printf("filtered one username out woo hoo\n")
+      }
+
+    }
+    
+    mainPost.LikedBy = filteredLikedBy
+    document.MainPost = mainPost
+    s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document )
+  
+  }else{
+    position--;
+    fmt.Printf("liking %dth comment as %s\n", position, username)
+    if document.Comments == nil{
+      fmt.Printf("UnlikePost :: Comments is nil, cancelling the like\n")
+      return nil
+    }
+
+    fmt.Printf("UnlikePost :: Comments is %d\n", len(document.Comments))
+    
+    if len(document.Comments) > position {
+      fmt.Printf("if so\n")
+      var post = document.Comments[position]
+
+      var filteredLikedBy = make([]string, len(post.LikedBy))
+
+      for _, value := range post.LikedBy{
+        if(value != username){
+          filteredLikedBy = append(filteredLikedBy, value)
+        }else{
+          fmt.Printf("filtered one username out woo hoo\n")
+        }
+
+      } 
+
+      post.LikedBy = filteredLikedBy
+      document.Comments[position] = post
+      s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document ) 
+    }
+  }
+  return document
+}
+
 func (s * Library) FindDocumentsFor(users []personal.Person, timestamp int) []Document {
 
     var result = make([]Document, 100)
