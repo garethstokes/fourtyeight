@@ -136,6 +136,9 @@ func (s * Library) LikePost(id string, position int, username string) * Document
     var mainPost = document.MainPost
     mainPost.LikedBy = append( mainPost.LikedBy, username )
     document.MainPost = mainPost;
+    //update last modified
+    document.LastModified = time.Now().UTC().Unix()
+  
     s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document )
   
   }else{
@@ -155,6 +158,9 @@ func (s * Library) LikePost(id string, position int, username string) * Document
       post.LikedBy = append( post.LikedBy, username )
       fmt.Printf("LikePost :: LikedBy is %d\n", len(post.LikedBy))
       document.Comments[position] = post;
+      //update last modified
+      document.LastModified = time.Now().UTC().Unix()
+  
       s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document )
       fmt.Printf("if so done\n")
     }
@@ -188,6 +194,9 @@ func (s * Library) UnlikePost(id string, position int, username string) * Docume
     
     mainPost.LikedBy = filteredLikedBy
     document.MainPost = mainPost
+    //update last modified
+    document.LastModified = time.Now().UTC().Unix()
+  
     s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document )
   
   }else{
@@ -217,6 +226,9 @@ func (s * Library) UnlikePost(id string, position int, username string) * Docume
 
       post.LikedBy = filteredLikedBy
       document.Comments[position] = post
+      //update last modified
+      document.LastModified = time.Now().UTC().Unix()
+  
       s.collection.Update( bson.M{"key": bson.ObjectIdHex(id)}, document ) 
     }
   }
@@ -227,15 +239,20 @@ func (s * Library) FindDocumentsFor(users []personal.Person, timestamp int) []Do
 
     var result = make([]Document, 100)
 
+    fmt.Printf("documents: %d\n", timestamp)
+
     var queries = make([]bson.M, len(users))
     for i := range users {
       queries[i] = bson.M{ "$and": []bson.M{
                       bson.M{"mainpost.ownerid": users[i].Username},
-                      bson.M{"datecreated": bson.M{ "$gt": timestamp }},
+                      bson.M{"lastmodified": bson.M{ "$gt": timestamp }},
                    }}
     }
 
     var query = bson.M{"$or": queries}
+
+    fmt.Printf("query: %s\n", query)
+
     err := s.collection.Find(query).All(&result)
     if err != nil {
         panic(err)
