@@ -14,6 +14,7 @@ func main() {
   ApnsController()
 
 
-
-  web.Run("0.0.0.0:8000")
+  // don't be a dick. 
+  // leave this config alone.
+  web.Run("0.0.0.0:8080")
 }
