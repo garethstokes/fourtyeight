@@ -9,6 +9,16 @@ import (
 	"github.com/garethstokes/fourtyeight/passwords"
 )
 
+func WarmAuthCache(){
+    // check if user is logged in
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+    
+    p.FillCacheWithLoginTokens()
+
+}
+
 func PersonalController() {
 
   // GET User by name
@@ -68,6 +78,8 @@ func PersonalController() {
     hash := passwords.Compute( name + params.Password )
 
     cache.Set("users", hash.Hash, user )
+
+    p.SaveLoginToken(user.Username, hash.Hash)
 
     ok( ctx, map[string] interface{} {
       "token": hash.Hash,
