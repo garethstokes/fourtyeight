@@ -6,5 +6,6 @@ God.watch do |w|
   w.log   = "/var/log/god/webserver.log"
   w.keepalive(:memory_max => 512.megabytes)
   w.env = {
+    'GOPATH' => '/go/'
   }
 end
