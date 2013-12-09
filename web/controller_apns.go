@@ -23,8 +23,7 @@ func ApnsController() {
   // register a client for push notifications
   type ApnsRegisterParams struct {
     Token string
-    DeviceToken string
-    DeviceType string
+    DeviceToken string 
   }
 
   web.Post("/apns/register", func(ctx * web.Context) {
@@ -36,6 +35,18 @@ func ApnsController() {
     if err != nil {
       apiError(ctx, "incorrect parameters found")
       fmt.Printf( "ERROR: %s\n", err.Error() )
+      return
+    }
+
+    if params.DeviceToken == ""{
+      apiError( ctx, "INVALID_NOTIFY_TOKEN" )
+      fmt.Println("INVALID_NOTIFY_TOKEN")
+      return
+    }
+
+    if params.Token == "" {
+      apiError( ctx, "INVALID_TOKEN" )
+      fmt.Println("INVALID_USER_TOKEN")
       return
     }
 
