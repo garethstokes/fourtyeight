@@ -41,10 +41,17 @@ func SendNotification( timeToLive int64, message string, recipients []string ){
 	bodyPost.data = content
 
 	b, err := json.Marshal(bodyPost)
+	if err != nil {
+		fmt.Printf( "Problem marshalling json: %s", err.Error())
+	}
+
 	rdr := bytes.NewReader(b)
 
 	req, err := http.NewRequest("POST", GOOGLE_URL, rdr)
-	
+	if err != nil {
+		fmt.Printf( "Problem creating request: %s", err.Error())
+	}
+
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Authorization", "key=AIzaSyDXIbZpR-lrGgBEsAqQCUGpB3oMR6E_Ysk")
 
