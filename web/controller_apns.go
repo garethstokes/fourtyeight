@@ -20,8 +20,8 @@ func WarmApnCache(){
 }
 
 func SendPushNotificationTo(users []string, message string){
-    iosDeviceTokens := make([]string, len(users))
-    androidDeviceTokens := make([]string, len(users))
+    iosDeviceTokens := make([]string, 0)
+    androidDeviceTokens := make([]string, 0)
  
     //gather the tokens for each user and each platform
     for _, user := range users{

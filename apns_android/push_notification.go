@@ -18,12 +18,12 @@ const COLLAPSE_KEY_NEW_COMMENTS = "Someone has commented on your post"
 
 type AndroidPushNotification struct{
 	//TODO time_to_live int64 `json:"time_to_live"`
-	registrationIds []string `json:"registration_ids"`
-	data * PushNotificationContent `json:"data"`
+	RegistrationIds []string `json:"registration_ids"`
+	Data * PushNotificationContent `json:"data"`
 }
 
 type PushNotificationContent struct {
-	message string `json:"message"`
+	Message string `json:"message"`
 	//TODO put in some other data if you want, could even send new posts this way
 	// eg. newPost Document `json:"newPost"`
 }
@@ -34,11 +34,11 @@ func SendNotification( timeToLive int64, message string, recipients []string ){
 	}
 
 	content := new(PushNotificationContent)
-	content.message = message
+	content.Message = message
 
 	bodyPost := new(AndroidPushNotification)
-	bodyPost.registrationIds = recipients
-	bodyPost.data = content
+	bodyPost.RegistrationIds = recipients
+	bodyPost.Data = content
 
 	b, err := json.Marshal(bodyPost)
 	if err != nil {
@@ -61,7 +61,7 @@ func SendNotification( timeToLive int64, message string, recipients []string ){
 	}
 
 	//body is a []byte
-	body, err := ioutil.ReadAll(resp.Body)
+	body, err := ioutil.ReadAll(resp.Body) 
 	if err != nil {
 		fmt.Printf( "Problem reading post body: %s", err.Error())
 	}
