@@ -4,9 +4,13 @@ var post = require('./post'),
 module.exports = function(callback) {
 
   var user = {
-    name: 'caveman',
+    name: 'shredder',
     password: 'bobafett'
   };
+  // var user = {
+  //   name: 'caveman',
+  //   password: 'bobafett'
+  // };
 
   var options = {
     host: conf.host,

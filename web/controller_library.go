@@ -119,14 +119,23 @@ func LibraryController() {
 
     following, _ := personalStore.FollowersFor(person)
 
+    followerUsernames := make([]string, len(following))
     for _, follower := range following {
-      fmt.Println("checking push notification for: " + follower.Username)
-
-      deviceToken := cache.Get("apns", follower.Username)
-      if deviceToken != nil {
-        go sendPushNotificationTo(deviceToken.(string), person.Username)
-      }
+      followerUsernames = append(followerUsernames, follower.Username)
     }
+
+    //'go' sends it to a different thread - awesome!
+    go SendPushNotificationTo(followerUsernames, "New posts available droppers")
+
+    // for _, follower := range following {
+    //   fmt.Println("checking push notification for: " + follower.Username)
+
+
+    //   deviceToken := cache.Get("apns", follower.Username)
+    //   if deviceToken != nil {
+    //     go sendPushNotificationTo(deviceToken.(string), person.Username)
+    //   }
+    // }
 
     ok( ctx, document )
   })
@@ -171,7 +180,31 @@ func LibraryController() {
     l.OpenSession()
     defer l.CloseSession()
 
+    //Create the post
     document := l.AddPost( post, documentId )
+
+    /////// BUILD A LIST OF THE PEOPLE WHO SHOULD BE NOTIFIED
+    /////// THIS SHOULD BE REFACTORED OUT TO SOMEWHERE NICER SOON COS ITS PROBABLY GONNA BE DUPLICATED
+    person := user.(* personal.Person)
+
+    usersWhoShouldBeNotified := make([]string, 1)
+    //Add the owner of the post, if they are commenting on their own post, leave them out
+    if(person.Username != document.MainPost.OwnerId){
+      usersWhoShouldBeNotified = append (usersWhoShouldBeNotified , document.MainPost.OwnerId)
+    }
+    //go through all the commenters and add them, unless they are the owner of this new comment, 
+    //or the owner of the post (who we have already added above)
+    for _, p := range document.Comments{
+      if(person.Username != p.OwnerId && document.MainPost.OwnerId != p.OwnerId){
+        usersWhoShouldBeNotified = append (usersWhoShouldBeNotified , p.OwnerId)
+      }
+    }
+
+    //notify the people above
+    go SendPushNotificationTo(usersWhoShouldBeNotified, "New posts available droppers")
+
+    /////// END NOTIFICATION LOGIX
+
 
     ok( ctx, document )
   })
@@ -206,8 +239,31 @@ func LibraryController() {
     // fmt.Printf("LIKE :: Position %d\n", position)
     fmt.Printf("\nLIKE :: usrName " +usrName)
   
-
     document := l.LikePost( documentId , posi, usrName)
+
+    /////// BUILD A LIST OF THE PEOPLE WHO SHOULD BE NOTIFIED
+    /////// THIS SHOULD BE REFACTORED OUT TO SOMEWHERE NICER SOON COS ITS PROBABLY GONNA BE DUPLICATED
+    person := user.(* personal.Person)
+    
+    usersWhoShouldBeNotified := make([]string,1)
+    //Add the owner of the post, if they are liking on their own post, leave them out
+    if(person.Username != document.MainPost.OwnerId){
+      usersWhoShouldBeNotified = append (usersWhoShouldBeNotified , document.MainPost.OwnerId)
+    }
+    //go through all the commenters and add them, unless they are the owner of this new comment, 
+    //or the owner of the post (who we have already added above)
+    for i, p :=range document.Comments{
+      if(i==posi){
+        if(person.Username != p.OwnerId && document.MainPost.OwnerId != p.OwnerId){
+          usersWhoShouldBeNotified = append (usersWhoShouldBeNotified , p.OwnerId)
+        }
+      }
+    }
+
+    //notify the people above
+    go SendPushNotificationTo(usersWhoShouldBeNotified, "New posts available droppers")
+    
+    /////// END NOTIFICATION LOGIX
 
     ok( ctx, document )
   })

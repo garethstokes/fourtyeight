@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"github.com/hoisie/web"
   "github.com/garethstokes/fourtyeight/cache"
+  "github.com/garethstokes/fourtyeight/apns_android"
 	"github.com/garethstokes/fourtyeight/personal"
 )
 
@@ -16,6 +17,35 @@ func WarmApnCache(){
     
     p.FillCacheWithNotificationTokens()
 
+}
+
+func SendPushNotificationTo(users []string, message string){
+    iosDeviceTokens := make([]string, len(users))
+    androidDeviceTokens := make([]string, len(users))
+ 
+    //gather the tokens for each user and each platform
+    for _, user := range users{
+      //ios
+      iosToken := cache.Get("apns", user)
+      if(iosToken!=nil){
+        iosDeviceTokens = append(iosDeviceTokens, iosToken.(string))
+      }
+      //android
+      androidToken := cache.Get("apns_android", user)
+      if(androidToken!=nil){
+        androidDeviceTokens = append(androidDeviceTokens, androidToken.(string))
+      }
+    }
+ 
+    //ios
+    if(len(iosDeviceTokens) > 0){
+     // sendPushNotificationTo(deviceToken.(string), person.Username)
+    }
+
+    //android
+    if(len(androidDeviceTokens) > 0){
+      apns_android.SendNotification(0, message, androidDeviceTokens)
+    }
 }
 
 func ApnsController() {
