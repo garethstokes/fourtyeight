@@ -50,13 +50,13 @@ func SendNotification( timeToLive int64, message string, recipients []string ){
 
 	resp, err := client.Do(req)
 	if err != nil {
-		fmt.Print( "Problem doing post: %s", err.Error())
+		fmt.Printf( "Problem doing post: %s", err.Error())
 	}
 
 	//body is a []byte
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		fmt.Print( "Problem reading post body: %s", err.Error())
+		fmt.Printf( "Problem reading post body: %s", err.Error())
 	}
 	
 	//bodyBuf *Buffer
@@ -65,10 +65,10 @@ func SendNotification( timeToLive int64, message string, recipients []string ){
 	//bodyStr string
 	bodyStr, err := bodyBuf.ReadString('\n')
 	if err != nil {
-		fmt.Print( "Problem reading post bodyStr: %s", err.Error())
+		fmt.Printf( "Problem reading post bodyStr: %s", err.Error())
 	}
 	
-	fmt.Print( "Response from google push notifications %s\n", bodyStr )
+	fmt.Printf( "Response from google push notifications %s\n", bodyStr )
 
 
 }
