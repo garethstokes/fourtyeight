@@ -28,7 +28,9 @@ func SendPushNotificationTo(users []string, message string){
       //ios
       iosToken := cache.Get("apns", user)
       if(iosToken!=nil){
-        iosDeviceTokens = append(iosDeviceTokens, iosToken.(string))
+        // TODO batch ios notifications same as android
+        // iosDeviceTokens = append(iosDeviceTokens, iosToken.(string))
+        go sendPushNotificationTo(iosToken.(string), message)
       }
       //android
       androidToken := cache.Get("apns_android", user)
@@ -39,7 +41,8 @@ func SendPushNotificationTo(users []string, message string){
  
     //ios
     if(len(iosDeviceTokens) > 0){
-     // sendPushNotificationTo(deviceToken.(string), person.Username)
+      // TODO batch ios notifications same as android
+      // sendPushNotificationTo(deviceToken.(string), person.Username)
     }
 
     //android
