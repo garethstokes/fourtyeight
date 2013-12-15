@@ -201,7 +201,7 @@ func LibraryController() {
     }
 
     //notify the people above
-    go SendPushNotificationTo(usersWhoShouldBeNotified, "New posts available droppers")
+    go SendPushNotificationTo(usersWhoShouldBeNotified, person.Username + " just commented on a post")
 
     /////// END NOTIFICATION LOGIX
 
@@ -261,7 +261,7 @@ func LibraryController() {
     }
 
     //notify the people above
-    go SendPushNotificationTo(usersWhoShouldBeNotified, "New posts available droppers")
+    go SendPushNotificationTo(usersWhoShouldBeNotified, person.Username + " just liked a post")
     
     /////// END NOTIFICATION LOGIX
 

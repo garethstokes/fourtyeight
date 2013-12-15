@@ -28,7 +28,7 @@ func main() {
 
   now := time.Now().UTC().Unix()
 
-  l.CreateFrom(& library.Post { "@garrydanger", "http://i.imgur.com/FudYBky.jpg", "Took me a while to figure out that hand-situation.", now , make([]string, 0) }, 60 * 60 * 48)
-  l.CreateFrom(& library.Post { "@shredder", "", "guys, i think that i might need a shave.", now, make([]string, 0) }, 60 * 60 * 48)
-  l.CreateFrom(& library.Post { "@shredder", "", "guys, i think that i might need a shave.", now , make([]string, 0) }, 1)
+  // l.CreateFrom(& library.Post { "@garrydanger", "http://i.imgur.com/FudYBky.jpg", "Took me a while to figure out that hand-situation.", now , make([]string, 0) }, 60 * 60 * 48)
+  // l.CreateFrom(& library.Post { "@shredder", "", "guys, i think that i might need a shave.", now, make([]string, 0) }, 60 * 60 * 48)
+  // l.CreateFrom(& library.Post { "@shredder", "", "guys, i think that i might need a shave.", now , make([]string, 0) }, 1)
 }
