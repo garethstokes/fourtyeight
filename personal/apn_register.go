@@ -84,7 +84,11 @@ func (s * Personal) RegisteriOSDevice(username string, token string) error {
 }
 
 func (s * Personal) RegisterDevice(username string, token string, deviceType int) error {
+  
+  s.UnRegisterDevice(token)
+
   sql := "INSERT INTO pushNotificationRegister ( username, token, deviceType, date_created ) VALUES ( ?, ?, ?, NOW() );"
+  
   statement, error := s.db.Prepare( sql )
   if error != nil {
     s.error( error.Error() )
@@ -95,6 +99,28 @@ func (s * Personal) RegisterDevice(username string, token string, deviceType int
   s.log(sql)
 
   _, error = statement.Exec( username, token, deviceType )
+
+  if error != nil {
+    s.error( error.Error() )
+    return error
+  }
+
+  return nil
+}
+
+func (s * Personal) UnRegisterDevice(token string) error{
+  sql := "DELETE FROM pushNotificationRegister where token =?;"
+  
+  statement, error := s.db.Prepare( sql )
+  if error != nil {
+    s.error( error.Error() )
+    return error
+  }
+  defer statement.Close()
+
+  s.log(sql)
+
+  _, error = statement.Exec(token)
 
   if error != nil {
     s.error( error.Error() )
