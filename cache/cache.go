@@ -15,3 +15,9 @@ func Set(namespace string, key string, value interface{}) {
   fmt.Printf( "cache.Set :: %s :: %@\n", key, value )
   db[key] = value
 }
+
+func Remove(namespace string, key string) {
+  key = namespace + "." + key
+  fmt.Printf( "cache.Remove :: %s \n", key )
+  delete(db , key)
+}

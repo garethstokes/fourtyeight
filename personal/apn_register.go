@@ -109,6 +109,11 @@ func (s * Personal) RegisterDevice(username string, token string, deviceType int
 }
 
 func (s * Personal) UnRegisterDevice(token string) error{
+  //remove from cache first
+  //WARNING assuming that there is never going to be an android token that is the same as the ios token... safe assumption right? LIke the song...
+  cache.Remove("apns_android", token)
+  cache.Remove("apns", token)
+
   sql := "DELETE FROM pushNotificationRegister where token =?;"
   
   statement, error := s.db.Prepare( sql )
