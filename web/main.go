@@ -16,5 +16,5 @@ func main() {
 
   // don't be a dick. 
   // leave this config alone.
-  web.Run("0.0.0.0:8000")
+  web.Run("0.0.0.0:8080")
 }
