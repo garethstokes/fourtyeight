@@ -2,12 +2,16 @@ package main
 
 import (
 	"github.com/hoisie/web"
+	"github.com/garethstokes/fourtyeight/mail"
 )
 
 func main() {
 
   WarmApnCache()
   WarmAuthCache()
+
+  mail.Initialise()
+
   RegisterRoutes()
   PersonalController()
   LibraryController()
