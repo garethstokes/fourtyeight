@@ -9,7 +9,7 @@ import (
 
 func main() {
   payload := apns.NewPayload()
-  payload.Alert = "Hello, world!"
+  payload.Alert = "duh, computors"
 
   pn := apns.NewPushNotification()
   pn.DeviceToken = "b8172707ae9f253b07b722b846649f526e091200cdb8f07a2594eed4f8af16d6"
@@ -18,8 +18,8 @@ func main() {
   var wd, _ = os.Getwd()
 
   cert, err := tls.LoadX509KeyPair(
-    wd + "/../apns/certs/apns-dev-cert.pem",
-    wd + "/../apns/certs/apns-dev-key-noenc.pem",
+    wd + "/apns-dev-cert.pem",
+    wd + "/apns-dev-key-noenc.pem",
   )
 
   fmt.Println(cert)
@@ -32,8 +32,8 @@ func main() {
 
   client := apns.NewClient(
     "gateway.sandbox.push.apple.com:2195",
-    wd + "/apns/certs/apns-dev-cert.pem",
-    wd + "/apns/certs/apns-dev-key-noenc.pem",
+    wd + "/apns-dev-cert.pem",
+    wd + "/apns-dev-key-noenc.pem",
   )
   resp := client.Send(pn)
 
