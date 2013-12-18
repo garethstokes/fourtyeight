@@ -161,6 +161,11 @@ func PersonalController() {
     ok( ctx, following )
   })
 
+  web.Get("/user/send/test/email", func(ctx * web.Context) {
+    mail.SendWelcomeEmail("gareth@betechnolgy.com.au")
+    ok( ctx, "its all good man" )
+  });
+
   /*
       CREATE USER: 
         note that ctx.Params does not work on json input
