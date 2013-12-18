@@ -30,7 +30,7 @@ type PushNotificationContent struct {
 //time to live is the time between now and when the post dies in seconds
 func SendNotification( timeToLive int64, message string, recipients []string ){
 
-	client := &http.Client{ 
+	client := &http.Client{
 	}
 
 	content := new(PushNotificationContent)

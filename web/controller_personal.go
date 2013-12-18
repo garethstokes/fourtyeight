@@ -7,6 +7,7 @@ import (
 	"github.com/garethstokes/fourtyeight/personal"
 	"github.com/garethstokes/fourtyeight/cache"
 	"github.com/garethstokes/fourtyeight/passwords"
+	"github.com/garethstokes/fourtyeight/mail"
 )
 
 func WarmAuthCache(){
@@ -163,7 +164,6 @@ func PersonalController() {
   /*
       CREATE USER: 
         note that ctx.Params does not work on json input
-
   */
   type userCreateParams struct {
     personal.Person
@@ -208,6 +208,8 @@ func PersonalController() {
 
     hash := passwords.Compute( user.Username + params.Password )
     cache.Set("users", hash.Hash, user)
+
+    go mail.SendWelcomeEmail(u.Email)
 
     ok( ctx, map[string] interface{} {
       "token": hash.Hash,
