@@ -214,7 +214,7 @@ func PersonalController() {
     hash := passwords.Compute( user.Username + params.Password )
     cache.Set("users", hash.Hash, user)
 
-    mail.SendWelcomeEmail(u.Email)
+    go mail.SendWelcomeEmail(u.Email)
 
     ok( ctx, map[string] interface{} {
       "token": hash.Hash,
