@@ -21,6 +21,7 @@ func WarmApnCache(){
 
 func SendPushNotificationToOne(user string, message string, postid string){
    quickWrapper := make([]string, 1)
+   quickWrapper = append(quickWrapper, user)
    SendPushNotificationTo(quickWrapper, message, postid)
 }
 
