@@ -125,7 +125,7 @@ func LibraryController() {
     }
 
     //'go' sends it to a different thread - awesome!
-    go SendPushNotificationTo(followerUsernames, "New posts available droppers")
+    go SendPushNotificationTo(followerUsernames, "New posts available droppers", "")
 
     // for _, follower := range following {
     //   fmt.Println("checking push notification for: " + follower.Username)
@@ -187,11 +187,12 @@ func LibraryController() {
     /////// THIS SHOULD BE REFACTORED OUT TO SOMEWHERE NICER SOON COS ITS PROBABLY GONNA BE DUPLICATED
     person := user.(* personal.Person)
 
-    usersWhoShouldBeNotified := make([]string, 1)
     //Add the owner of the post, if they are commenting on their own post, leave them out
-    if(person.Username != document.MainPost.OwnerId){
-      usersWhoShouldBeNotified = append (usersWhoShouldBeNotified , document.MainPost.OwnerId)
+    if(person.Username != document.MainPost.OwnerId){ 
+      go SendPushNotificationToOne(document.MainPost.OwnerId, person.Username + " just commented on your post", documentId)
     }
+
+    usersWhoShouldBeNotified := make([]string, 1)
     //go through all the commenters and add them, unless they are the owner of this new comment, 
     //or the owner of the post (who we have already added above)
     for _, p := range document.Comments{
@@ -201,7 +202,7 @@ func LibraryController() {
     }
 
     //notify the people above
-    go SendPushNotificationTo(usersWhoShouldBeNotified, person.Username + " just commented on a post")
+    go SendPushNotificationTo(usersWhoShouldBeNotified, person.Username + " also commented on "+document.MainPost.OwnerId+"'s post", documentId)
 
     /////// END NOTIFICATION LOGIX
 
@@ -214,15 +215,17 @@ func LibraryController() {
    
     ctx.SetHeader("Content-Type", "application/json", true)
     
+    isLikingMainPost := false
+
     if len(position) == 0 {
       position = "/0"
+      isLikingMainPost = true
     }
+
     fmt.Printf("\nLIKE :: Document position %s " , position)
 
     var posi, _ = strconv.Atoi(position[1:]) 
-    
-    fmt.Printf("\nLIKE :: Document posi %d " , posi)
-
+     
     user := cache.Get("users", token )
     if user == nil {
       apiError( ctx, "Invalid token" )
@@ -245,24 +248,32 @@ func LibraryController() {
     /////// THIS SHOULD BE REFACTORED OUT TO SOMEWHERE NICER SOON COS ITS PROBABLY GONNA BE DUPLICATED
     person := user.(* personal.Person)
     
-    usersWhoShouldBeNotified := make([]string,1)
     //Add the owner of the post, if they are liking on their own post, leave them out
-    if(person.Username != document.MainPost.OwnerId){
-      usersWhoShouldBeNotified = append (usersWhoShouldBeNotified , document.MainPost.OwnerId)
-    }
-    //go through all the commenters and add them, unless they are the owner of this new comment, 
-    //or the owner of the post (who we have already added above)
-    for i, p :=range document.Comments{
-      if(i==posi){
-        if(person.Username != p.OwnerId && document.MainPost.OwnerId != p.OwnerId){
-          usersWhoShouldBeNotified = append (usersWhoShouldBeNotified , p.OwnerId)
+    
+    if (isLikingMainPost){
+      //someone is liking the main post
+      if(person.Username != document.MainPost.OwnerId){
+        //the person who is liking the post is not the owner of the post
+        go SendPushNotificationToOne(document.MainPost.OwnerId, person.Username + " just liked your post", documentId)
+      }
+      //notify the other people who like it already
+      go SendPushNotificationTo(document.MainPost.LikedBy, person.Username + " also liked " + document.MainPost.OwnerId + "'s post", documentId)
+      
+    }else{ 
+      //go through all the comments, find the one being liked
+      for i, p :=range document.Comments{
+        if(i==posi){
+          //found the comment in question
+          if(person.Username != p.OwnerId){
+            //notify the original comment maker
+            go SendPushNotificationToOne(p.OwnerId, person.Username + " just liked your comment", documentId)
+          }
+          //notify the other people who like it already
+          go SendPushNotificationTo(p.LikedBy, person.Username + " also liked " + p.OwnerId + "'s comment", documentId)
         }
       }
     }
-
-    //notify the people above
-    go SendPushNotificationTo(usersWhoShouldBeNotified, person.Username + " just liked a post")
-    
+   
     /////// END NOTIFICATION LOGIX
 
     ok( ctx, document )

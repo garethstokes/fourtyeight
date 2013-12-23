@@ -19,7 +19,12 @@ func WarmApnCache(){
 
 }
 
-func SendPushNotificationTo(users []string, message string){
+func SendPushNotificationToOne(user string, message string, postid string){
+   quickWrapper := make([]string, 1)
+   SendPushNotificationTo(quickWrapper, message, postid)
+}
+
+func SendPushNotificationTo(users []string, message string, postid string){
     iosDeviceTokens := make([]string, 0)
     androidDeviceTokens := make([]string, 0)
  
@@ -47,7 +52,7 @@ func SendPushNotificationTo(users []string, message string){
 
     //android
     if(len(androidDeviceTokens) > 0){
-      apns_android.SendNotification(0, message, androidDeviceTokens)
+      apns_android.SendNotification(0, message, postid, androidDeviceTokens)
     }
 }
 
