@@ -35,6 +35,7 @@ func SendPushNotificationTo(users []string, message string, postid string){
       if(iosToken!=nil){
         // TODO batch ios notifications same as android
         // iosDeviceTokens = append(iosDeviceTokens, iosToken.(string))
+        // TODO SEND THE POSTID AS PART OF THE PAYLOAD
         go sendPushNotificationTo(iosToken.(string), message)
       }
       //android
