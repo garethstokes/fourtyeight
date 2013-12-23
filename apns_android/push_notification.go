@@ -36,6 +36,7 @@ func SendNotification( timeToLive int64, message string, post string, recipients
 
 	content := new(PushNotificationContent)
 	content.Message = message
+	content.PostIdentifier = post
 
 	bodyPost := new(AndroidPushNotification)
 	bodyPost.RegistrationIds = recipients
