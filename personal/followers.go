@@ -117,6 +117,65 @@ func (s * Personal) txFollowing( user * Person, tx * sql.Tx ) ([]Person, error) 
   return followers, nil
 }
 
+func (s * Personal) RemoveFollowerFrom( user * Person, follower * Person ) ([]Person, error) {
+   s.logf( "persona.RemoveFollowerFrom :: ( %s, %s )\n", user.Username, follower.Username )
+
+  tx, error := s.db.Begin()
+  if error != nil {
+    s.error( error.Error() )
+    return nil, error
+  }
+
+  var followers []Person
+  followers, error = s.txFollowersFor( user, tx )
+  if error != nil {
+    s.error( error.Error() )
+    return nil, error
+  }
+
+  // look up the user if we don't have any ids
+  if user.id == 0 {
+    user, _ = s.txFindByName( user.Username, tx )
+  }
+
+  // look up the follower if we don't have any ids
+  if follower.id == 0 {
+    follower, _ = s.txFindByName( follower.Username, tx )
+  }
+
+  // if we reach here then it is safe to add
+  // the user to the list of followers.
+
+  sql := "DELETE FROM follower WHERE user_id =? AND follower_id=?;"
+  
+  statement, error := tx.Prepare( sql )
+  if error != nil {
+    s.error( error.Error() )
+    return nil, error
+  }
+  defer statement.Close()
+
+  s.log(sql)
+
+  _, error = statement.Exec(user.id, follower.id)
+
+  if error != nil {
+    s.error( error.Error() )
+    return nil, error
+  }
+ 
+  followers, _ = s.txFollowersFor( user, tx )
+  if error == nil {
+    err := tx.Commit()
+    s.logf( "tx_result: %@\n", err )
+  } else {
+    s.error( error.Error() )
+    tx.Rollback()
+  }
+
+  return followers, nil
+}
+
 func (s * Personal) AddFollowerTo( user * Person, follower * Person ) ([]Person, error) {
   s.logf( "persona.AddFollowerTo :: ( %s, %s )\n", user.Username, follower.Username )
 

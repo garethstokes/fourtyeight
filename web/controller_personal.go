@@ -161,6 +161,29 @@ func PersonalController() {
     ok( ctx, following )
   })
 
+  web.Post("/user/(.+)/unfollow/(.+)", func(ctx * web.Context, token string, toUnFollow string) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    user := cache.Get("users", token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    personToUnFollow, _ := p.FindByName(fmt.Sprintf( "@%s", toUnFollow ))
+    if personToUnFollow == nil {
+      apiError( ctx, "Invalid unfollow username." )
+      return
+    }
+
+    following, _ := p.RemoveFollowerFrom( personToUnFollow, user.(* personal.Person) )
+    ok( ctx, following )
+  })
+
   web.Get("/user/send/test/email", func(ctx * web.Context) {
     mail.SendWelcomeEmail("gareth@betechnolgy.com.au")
     ok( ctx, "its all good man" )
