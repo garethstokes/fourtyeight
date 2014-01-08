@@ -191,7 +191,7 @@ func (s * Personal) AllUsers() ([]Person, error) {
   s.logf( "personal.AllUsers :: ")
 
   sql := fmt.Sprintf(
-    "SELECT * FROM user;" )
+    "SELECT user_id, username, email, avatar_url, date_created FROM user;" )
 
   rows, error = s.db.Query( sql )
   
