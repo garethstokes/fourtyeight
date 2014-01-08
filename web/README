@@ -22,7 +22,7 @@ curl -XPOST localhost:8080/library/U3lHibjx9f8TzaHyXmkLug==/document \
       "result":{
         "lastUpdated":"2013-07-09T13:23:53.714103269Z",
         "mainPost":{
-          "ownerId":"@garrydanger",
+          "ownerId":"garrydanger",
           "imageUrl":"http://i.imgur.com/1dxWiPF.jpg",
           "text":"the iron throne",
           "dateCreated":"2013-07-09T13:23:53.712520121Z"
@@ -43,13 +43,13 @@ curl -XPOST localhost:8080/library/lxm2vpRnNbHdwju2unFMig==/document/51dc1fb8ee6
         "key":"51dc1fb8ee6da16e1c000001",
         "lastUpdated":"2013-07-09T14:35:36.34Z",
         "mainPost":{
-          "ownerId":"@garrydanger",
+          "ownerId":"garrydanger",
           "imageUrl":"http://i.imgur.com/FudYBky.jpg",
           "text":"Took me a while to figure out that hand-situation.",
           "dateCreated":"2013-07-09T14:35:36.34Z"
         },
         "comments":[
-          {"ownerId":"@garrydanger","imageUrl":"http://i.imgur.com/1dxWiPF.jpg","text":"the iron throne","dateCreated":"0001-01-01T00:00:00Z"}
+          {"ownerId":"garrydanger","imageUrl":"http://i.imgur.com/1dxWiPF.jpg","text":"the iron throne","dateCreated":"0001-01-01T00:00:00Z"}
         ]
       }
     }

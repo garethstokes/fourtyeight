@@ -28,12 +28,12 @@ func TestFindByName(t * testing.T) {
   s := BeginTest( "Find by name" )
   defer CleanUp(s)
 
-  person, error := s.FindByName( "@garrydanger" )
+  person, error := s.FindByName( "garrydanger" )
   if error != nil {
     t.Fail()
   }
 
-  if person.Username != "@garrydanger" {
+  if person.Username != "garrydanger" {
     fmt.Print( "Incorrect user returned." )
     t.Fail()
   }
@@ -43,7 +43,7 @@ func TestValidate(t * testing.T) {
   s := BeginTest( "Validate user" )
   defer CleanUp(s)
 
-  username := "@garrydanger"
+  username := "garrydanger"
   password := "bobafett"
 
   person, error := s.Validate( username, password )
@@ -66,8 +66,8 @@ func TestGetFollowers(t * testing.T) {
   s := BeginTest( "Get Followers" )
   defer CleanUp(s)
 
-  garrydanger, _ := s.FindByName( "@garrydanger" )
-  shredder, _ := s.FindByName( "@shredder" )
+  garrydanger, _ := s.FindByName( "garrydanger" )
+  shredder, _ := s.FindByName( "shredder" )
 
   followers, _ := s.FollowersFor( garrydanger )
 

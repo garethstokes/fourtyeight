@@ -31,6 +31,25 @@ login(function(result) {
   post(options, message, function(response) {
     console.log("followed OK");
     console.log(response);
+
+
+    var options = {
+      host: conf.host,
+      port: conf.port,
+      path: '/user/' + result.token + '/unfollow/garrydanger',
+      method: 'POST'
+    };
+
+    var message = {
+      "imageUrl": "http://i.imgur.com/1dxWiPF.jpg",
+      "expiry": 1000
+    };
+
+    post(options, message, function(response) {
+      console.log("unfollowed OK");
+      console.log(response);
+    });
+
   });
 
 });

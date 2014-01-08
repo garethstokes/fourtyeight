@@ -10,7 +10,7 @@ import (
 
 func post() * Post {
   post := new(Post)
-  post.OwnerId = "@garrydanger"
+  post.OwnerId = "garrydanger"
   post.Image = "http://i.imgur.com/FudYBky.jpg"
   post.Text = "Took me a while to figure out that hand-situation."
   post.DateCreated = 23712938
@@ -20,7 +20,7 @@ func post() * Post {
 func garrydanger() []personal.Person {
   var result = make([]personal.Person,1)
   gd := new(personal.Person)
-  gd.Username = "@garrydanger"
+  gd.Username = "garrydanger"
 
   result = append(result, * gd)
   return result

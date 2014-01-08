@@ -31,9 +31,8 @@ func PersonalController() {
     p:= personal.Store()
     p.OpenSession()
     defer p.CloseSession()
-
-    name := fmt.Sprintf( "@%s", val )
-    person, error := p.FindByName( name )
+ 
+    person, error := p.FindByName( val )
     if error != nil {
       apiError( ctx, error.Error() )
       return
@@ -69,7 +68,7 @@ func PersonalController() {
     p.OpenSession()
     defer p.CloseSession()
 
-    name := fmt.Sprintf( "@%s", params.Name )
+    name := params.Name 
     user, error := p.Validate( name, params.Password )
     if error != nil {
       apiError( ctx, error.Error() )
@@ -169,7 +168,7 @@ func PersonalController() {
     p.OpenSession()
     defer p.CloseSession()
 
-    personToFollow, _ := p.FindByName(fmt.Sprintf( "@%s", toFollow ))
+    personToFollow, _ := p.FindByName( toFollow )
     if personToFollow == nil {
       apiError( ctx, "Invalid follow username." )
       return
@@ -192,7 +191,7 @@ func PersonalController() {
     p.OpenSession()
     defer p.CloseSession()
 
-    personToUnFollow, _ := p.FindByName(fmt.Sprintf( "@%s", toUnFollow ))
+    personToUnFollow, _ := p.FindByName( toUnFollow )
     if personToUnFollow == nil {
       apiError( ctx, "Invalid unfollow username." )
       return
