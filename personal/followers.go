@@ -69,6 +69,7 @@ func (s * Personal) Following( user * Person ) ([]Person, error) {
 }
 
 
+
 func (s * Personal) txFollowing( user * Person, tx * sql.Tx ) ([]Person, error) {
   var user_id int
   var username, email, avatar_url string

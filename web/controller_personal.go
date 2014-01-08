@@ -104,6 +104,24 @@ func PersonalController() {
     ok( ctx, user )
   })
 
+  web.Get("/users", func(ctx * web.Context) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    // NO AUTH
+    // user := cache.Get("users", token )
+    // if user == nil {
+    //   apiError( ctx, "Invalid token" )
+    //   return
+    // }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    users, _ := p.AllUsers( )
+    ok( ctx, users )
+  })
+
   web.Get("/user/(.+)/following", func(ctx * web.Context, token string) {
     ctx.SetHeader("Context-Type", "application/json", true)
 

@@ -181,3 +181,45 @@ func (s * Personal) SaveLoginToken (username string, token string) error{
   return nil
 }
 
+func (s * Personal) AllUsers() ([]Person, error) {
+  var user_id int
+  var username, email, avatar_url string
+  var date_created int64
+  var rows * sql.Rows
+  var error error
+
+  s.logf( "personal.AllUsers :: ")
+
+  sql := fmt.Sprintf(
+    "SELECT * FROM user;" )
+
+  rows, error = s.db.Query( sql )
+  
+  s.logf( "SQL: %s\n", sql )
+
+  if error != nil {
+    s.error( error.Error() )
+    return nil, error
+  }
+
+  followers := make( []Person, 0 )
+
+  for rows.Next() {
+    if error = rows.Scan( &user_id, &username, &email, &avatar_url, &date_created ); error != nil {
+      s.error( error.Error() )
+      return nil, error
+    }
+
+    person := new( Person )
+    person.id = user_id
+    person.Username = username
+    person.Email = email
+    person.AvatarUrl = avatar_url
+    person.DateCreated = date_created
+
+    s.logf( "adding %s to result", person.Username )
+    followers = append( followers, * person )
+  }
+
+  return followers, nil
+}
