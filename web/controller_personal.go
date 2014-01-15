@@ -15,9 +15,8 @@ func WarmAuthCache(){
     p := personal.Store()
     p.OpenSession()
     defer p.CloseSession()
-    
-    p.FillCacheWithLoginTokens()
 
+    p.FillCacheWithLoginTokens()
 }
 
 func PersonalController() {
@@ -233,9 +232,10 @@ func PersonalController() {
     defer p.CloseSession()
 
     u := new(personal.Person)
-    u.Username = fmt.Sprintf( "@%s", params.Username )
-    u.Email = params.Email
-    u.AvatarUrl = params.AvatarUrl
+    u.Username    = params.Username
+    u.Email       = params.Email
+    u.AvatarUrl   = params.AvatarUrl
+
     fmt.Printf("%@\n", u)
 
     validations := u.Validate()

@@ -19,6 +19,10 @@ func Initialise() {
   )
 }
 
+// TODO: write a message struct to handle recp / subject / body / etc
+// example code to include a subject
+// message := bytes.NewBufferString(fmt.Sprintf("Subject: %s\r\n\r\n%s", subject, body))
+
 func send(to []string, message []byte) error {
 
   // Connect to the server, authenticate, set the sender 
