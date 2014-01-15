@@ -181,7 +181,7 @@ func (s * Library) UnlikePost(id string, position int, username string) * Docume
     fmt.Printf("unliking the main post\n")
     var mainPost = document.MainPost
 
-    var filteredLikedBy = make([]string, len(mainPost.LikedBy))
+    var filteredLikedBy = make([]string, 0)
 
     for _, value := range mainPost.LikedBy{
       if(value != username){
@@ -213,7 +213,7 @@ func (s * Library) UnlikePost(id string, position int, username string) * Docume
       fmt.Printf("if so\n")
       var post = document.Comments[position]
 
-      var filteredLikedBy = make([]string, len(post.LikedBy))
+      var filteredLikedBy = make([]string, 0)
 
       for _, value := range post.LikedBy{
         if(value != username){
