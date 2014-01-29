@@ -147,8 +147,14 @@ func LibraryController() {
     }
 
     //'go' sends it to a different thread - awesome!
-    go push_notifications.SendPushNotificationTo(followerUsernames, "New posts available droppers", "")
 
+    if documentId, ok := document.Key.(string); ok {
+      go push_notifications.SendPushNotificationTo(followerUsernames, person.Username + " just dropped", documentId)
+    } else {
+      go push_notifications.SendPushNotificationTo(followerUsernames, person.Username + " just dropped", "")
+    }
+
+    
     // for _, follower := range following {
     //   fmt.Println("checking push notification for: " + follower.Username)
 
