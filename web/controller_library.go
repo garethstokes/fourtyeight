@@ -9,6 +9,7 @@ import (
 	"github.com/garethstokes/fourtyeight/library"
 	"github.com/garethstokes/fourtyeight/personal"
 	"github.com/garethstokes/fourtyeight/cache"
+  "github.com/garethstokes/fourtyeight/push_notifications"
 )
 
 func LibraryController() {
@@ -32,7 +33,7 @@ func LibraryController() {
       return
     }
 
-    // timstamp
+    // timestamp
     if len(timestamp) == 0 {
       var daysAgo int64 = 60 * 60 * 24 * 7 // 7 days ago
       var nowPlusDaysAgo int = int(time.Now().UTC().Unix() - daysAgo)
@@ -66,7 +67,28 @@ func LibraryController() {
     l.OpenSession()
     defer l.CloseSession()
 
-    posts := l.FindPublicDocuments(1)
+    posts := l.FindPublicDocuments(0)
+
+    ok( ctx, posts )
+  })
+
+  web.Get("/library/(/[0-9]+)?", func(ctx * web.Context, timestamp string) {
+    ctx.SetHeader("Content-Type", "application/json", true);
+
+    // timestamp
+    if len(timestamp) == 0 {
+      var daysAgo int64 = 60 * 60 * 24 * 7 // 7 days ago
+      var nowPlusDaysAgo int = int(time.Now().UTC().Unix() - daysAgo)
+      timestamp = "/" + strconv.Itoa(nowPlusDaysAgo)
+    }
+
+    var ts, _ = strconv.Atoi(timestamp[1:])
+
+    l := library.Store()
+    l.OpenSession()
+    defer l.CloseSession()
+
+    posts := l.FindPublicDocuments(ts)
 
     ok( ctx, posts )
   })
@@ -125,7 +147,7 @@ func LibraryController() {
     }
 
     //'go' sends it to a different thread - awesome!
-    go SendPushNotificationTo(followerUsernames, "New posts available droppers", "")
+    go push_notifications.SendPushNotificationTo(followerUsernames, "New posts available droppers", "")
 
     // for _, follower := range following {
     //   fmt.Println("checking push notification for: " + follower.Username)
@@ -189,7 +211,7 @@ func LibraryController() {
 
     //Add the owner of the post, if they are commenting on their own post, leave them out
     if(person.Username != document.MainPost.OwnerId){ 
-      go SendPushNotificationToOne(document.MainPost.OwnerId, person.Username + " just commented on your post", documentId)
+      go push_notifications.SendPushNotificationToOne(document.MainPost.OwnerId, person.Username + " just commented on your post", documentId)
     }
 
     usersWhoShouldBeNotified := make([]string, 1)
@@ -202,7 +224,7 @@ func LibraryController() {
     }
 
     //notify the people above
-    go SendPushNotificationTo(usersWhoShouldBeNotified, person.Username + " also commented on "+document.MainPost.OwnerId+"'s post", documentId)
+    go push_notifications.SendPushNotificationTo(usersWhoShouldBeNotified, person.Username + " also commented on "+document.MainPost.OwnerId+"'s post", documentId)
 
     /////// END NOTIFICATION LOGIX
 
@@ -254,10 +276,10 @@ func LibraryController() {
       //someone is liking the main post
       if(person.Username != document.MainPost.OwnerId){
         //the person who is liking the post is not the owner of the post
-        go SendPushNotificationToOne(document.MainPost.OwnerId, person.Username + " just liked your post", documentId)
+        go push_notifications.SendPushNotificationToOne(document.MainPost.OwnerId, person.Username + " just liked your post", documentId)
       }
       //notify the other people who like it already
-      go SendPushNotificationTo(document.MainPost.LikedBy, person.Username + " also liked " + document.MainPost.OwnerId + "'s post", documentId)
+      go push_notifications.SendPushNotificationTo(document.MainPost.LikedBy, person.Username + " also liked " + document.MainPost.OwnerId + "'s post", documentId)
       
     }else{ 
       //go through all the comments, find the one being liked
@@ -266,10 +288,10 @@ func LibraryController() {
           //found the comment in question
           if(person.Username != p.OwnerId){
             //notify the original comment maker
-            go SendPushNotificationToOne(p.OwnerId, person.Username + " just liked your comment", documentId)
+            go push_notifications.SendPushNotificationToOne(p.OwnerId, person.Username + " just liked your comment", documentId)
           }
           //notify the other people who like it already
-          go SendPushNotificationTo(p.LikedBy, person.Username + " also liked " + p.OwnerId + "'s comment", documentId)
+          go push_notifications.SendPushNotificationTo(p.LikedBy, person.Username + " also liked " + p.OwnerId + "'s comment", documentId)
         }
       }
     }

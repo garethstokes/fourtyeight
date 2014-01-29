@@ -1,4 +1,4 @@
-package apns
+package push_notifications
 
 import (
 	"bytes"
@@ -128,4 +128,31 @@ func (this *PushNotification) ToBytes() ([]byte, error) {
 	binary.Write(buffer, binary.BigEndian, uint16(len(payload)))
 	binary.Write(buffer, binary.BigEndian, payload)
 	return buffer.Bytes(), nil
+}
+
+
+func SendPushNotificationIOS(token string, content * PushNotificationContent) {
+  /*fmt.Println("sending push notification: ( " + token + " )")
+  payload := apns.NewPayload()
+  payload.Alert = message
+
+  pn := apns.NewPushNotification()
+  pn.DeviceToken = token
+  pn.AddPayload(payload)
+
+  var wd, _ = os.Getwd()
+
+  client := apns.NewClient(
+    "gateway.sandbox.push.apple.com:2195",
+    wd + "/keys/apns-dev-cert.pem",
+    wd + "/keys/apns-dev-key-noenc.pem",
+  )
+  resp := client.Send(pn)
+
+  alert, _ := pn.PayloadString()
+
+  fmt.Println("  Alert:", alert)
+  fmt.Println("Success:", resp.Success)
+  fmt.Println("  Error:", resp.Error)
+  */
 }

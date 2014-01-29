@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/hoisie/web"
   "github.com/garethstokes/fourtyeight/cache"
-  "github.com/garethstokes/fourtyeight/apns_android"
 	"github.com/garethstokes/fourtyeight/personal"
 )
 
@@ -17,45 +16,6 @@ func WarmApnCache(){
     
     p.FillCacheWithNotificationTokens()
 
-}
-
-func SendPushNotificationToOne(user string, message string, postid string){
-   quickWrapper := make([]string, 1)
-   quickWrapper = append(quickWrapper, user)
-   SendPushNotificationTo(quickWrapper, message, postid)
-}
-
-func SendPushNotificationTo(users []string, message string, postid string){
-    iosDeviceTokens := make([]string, 0)
-    androidDeviceTokens := make([]string, 0)
- 
-    //gather the tokens for each user and each platform
-    for _, user := range users{
-      //ios
-      iosToken := cache.Get("apns", user)
-      if(iosToken!=nil){
-        // TODO batch ios notifications same as android
-        // iosDeviceTokens = append(iosDeviceTokens, iosToken.(string))
-        // TODO SEND THE POSTID AS PART OF THE PAYLOAD
-        go sendPushNotificationTo(iosToken.(string), message)
-      }
-      //android
-      androidToken := cache.Get("apns_android", user)
-      if(androidToken!=nil){
-        androidDeviceTokens = append(androidDeviceTokens, androidToken.(string))
-      }
-    }
- 
-    //ios
-    if(len(iosDeviceTokens) > 0){
-      // TODO batch ios notifications same as android
-      // sendPushNotificationTo(deviceToken.(string), person.Username)
-    }
-
-    //android
-    if(len(androidDeviceTokens) > 0){
-      apns_android.SendNotification(0, message, postid, androidDeviceTokens)
-    }
 }
 
 func ApnsController() {

@@ -1,4 +1,4 @@
-package apns_android
+package push_notifications
 
 import (
 	"net/http"
@@ -22,21 +22,11 @@ type AndroidPushNotification struct{
 	Data * PushNotificationContent `json:"data"`
 }
 
-type PushNotificationContent struct {
-	Message string `json:"message"`
-	PostIdentifier string `json:"post"`
-	//TODO put in some other data if you want, could even send new posts this way
-	// eg. newPost Document `json:"newPost"`
-}
 //time to live is the time between now and when the post dies in seconds
-func SendNotification( timeToLive int64, message string, post string, recipients []string ){
+func SendPushNotificationAndroid( timeToLive int64, content * PushNotificationContent, recipients []string ){
 
 	client := &http.Client{
 	}
-
-	content := new(PushNotificationContent)
-	content.Message = message
-	content.PostIdentifier = post
 
 	bodyPost := new(AndroidPushNotification)
 	bodyPost.RegistrationIds = recipients
