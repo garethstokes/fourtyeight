@@ -7,26 +7,49 @@ import (
 type PushNotificationContent struct {
 	Type string `json:"type"`
 	Message string `json:"message"`
-	PostIdentifier string `json:"postId"`
+  PostIdentifier string `json:"postId"`
+  Username string `json:"username"`
 	//TODO put in some other data if you want, could even send new posts this way
 	// eg. newPost Document `json:"newPost"`
 }
 
-func SendPushNotificationToOne(user string, message string, postid string){
+func SendPushNotificationAboutAPostToOne(user string, message string, postid string){
    quickWrapper := make([]string, 1)
    quickWrapper = append(quickWrapper, user)
-   SendPushNotificationTo(quickWrapper, message, postid)
+   SendPushNotificationAboutAPost(quickWrapper, message, postid)
 }
 
-func SendPushNotificationTo(users []string, message string, postid string){
-    iosDeviceTokens := make([]string, 0)
-    androidDeviceTokens := make([]string, 0)
+func SendPushNotificationAboutAUserToOne(user string, message string, username string){
+   quickWrapper := make([]string, 1)
+   quickWrapper = append(quickWrapper, user)
+   SendPushNotificationAboutAUser(quickWrapper, message, username)
+}
+
+func SendPushNotificationAboutAPost(users []string, message string, postid string){
+
+    pn := new(PushNotificationContent)
+    pn.Type = "USER"
+    pn.Message = message
+    pn.PostIdentifier = postid
+
+    SendPushNotificationTo(users, pn)
+}
+
+func SendPushNotificationAboutAUser(users []string, message string, username string){
 
     pn := new(PushNotificationContent)
     pn.Type = "POST"
     pn.Message = message
-    pn.PostIdentifier = postid
+    pn.Username = username
 
+    SendPushNotificationTo(users, pn)
+}
+
+func SendPushNotificationTo(users []string, pn * PushNotificationContent){
+    iosDeviceTokens := make([]string, 0)
+    androidDeviceTokens := make([]string, 0)
+
+    
     //gather the tokens for each user and each platform
     for _, user := range users{
       //ios
