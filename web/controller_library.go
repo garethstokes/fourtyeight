@@ -10,6 +10,7 @@ import (
 	"github.com/garethstokes/fourtyeight/personal"
 	"github.com/garethstokes/fourtyeight/cache"
   "github.com/garethstokes/fourtyeight/push_notifications"
+  "labix.org/v2/mgo/bson"
 )
 
 func LibraryController() {
@@ -146,25 +147,9 @@ func LibraryController() {
       followerUsernames = append(followerUsernames, follower.Username)
     }
 
-    //'go' sends it to a different thread - awesome!
-
-    if documentId, ok := document.Key.(string); ok {
-      go push_notifications.SendPushNotificationTo(followerUsernames, person.Username + " just dropped", documentId)
-    } else {
-      go push_notifications.SendPushNotificationTo(followerUsernames, person.Username + " just dropped", "")
-    }
-
+    documentId  := (document.Key.(bson.ObjectId)).Hex()
+    go push_notifications.SendPushNotificationTo(followerUsernames, person.Username + " just dropped", documentId)
     
-    // for _, follower := range following {
-    //   fmt.Println("checking push notification for: " + follower.Username)
-
-
-    //   deviceToken := cache.Get("apns", follower.Username)
-    //   if deviceToken != nil {
-    //     go sendPushNotificationTo(deviceToken.(string), person.Username)
-    //   }
-    // }
-
     ok( ctx, document )
   })
 
