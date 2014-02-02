@@ -1,4 +1,4 @@
-package apns
+package push_notifications
 
 import (
 	"crypto/tls"

@@ -8,6 +8,7 @@ import (
 	"github.com/garethstokes/fourtyeight/cache"
 	"github.com/garethstokes/fourtyeight/passwords"
 	"github.com/garethstokes/fourtyeight/mail"
+  "github.com/garethstokes/fourtyeight/push_notifications"
 )
 
 func WarmAuthCache(){
@@ -174,6 +175,14 @@ func PersonalController() {
     }
 
     following, _ := p.AddFollowerTo( personToFollow, user.(* personal.Person) )
+
+    usersArray := make([]string, 1)
+    usersArray = append(usersArray, personToFollow.Username)
+
+    userWhoIsFollowing, _ := user.(* personal.Person)
+
+    go push_notifications.SendPushNotificationAboutAUser(usersArray, userWhoIsFollowing.Username + " just started following you", userWhoIsFollowing.Username)
+
     ok( ctx, following )
   })
 

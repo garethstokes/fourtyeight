@@ -1,4 +1,4 @@
-package apns
+package push_notifications
 
 import (
 	"bytes"
@@ -9,6 +9,8 @@ import (
 	"math/rand"
 	"strconv"
 	"time"
+	"fmt"
+	"os"
 )
 
 // Push commands always start with command value 1.
@@ -67,7 +69,7 @@ func NewPushNotification() (pn *PushNotification) {
 	return
 }
 
-func (this *PushNotification) AddPayload(p *Payload) {
+func (this *PushNotification) AddPayload(p *Payload, c * PushNotificationContent) {
 	// This deserves some explanation.
 	//
 	// Setting an exported field of type int to 0
@@ -85,6 +87,7 @@ func (this *PushNotification) AddPayload(p *Payload) {
 		p.Badge = -1
 	}
 	this.Set("aps", p)
+	this.Set("data", c)
 }
 
 func (this *PushNotification) Get(key string) interface{} {
@@ -128,4 +131,31 @@ func (this *PushNotification) ToBytes() ([]byte, error) {
 	binary.Write(buffer, binary.BigEndian, uint16(len(payload)))
 	binary.Write(buffer, binary.BigEndian, payload)
 	return buffer.Bytes(), nil
+}
+
+
+func SendPushNotificationIOS(token string, content * PushNotificationContent) {
+  fmt.Println("sending push notification: ( " + token + " )")
+  payload := NewPayload()
+  payload.Alert = content.Message
+
+  pn := NewPushNotification()
+  pn.DeviceToken = token
+  pn.AddPayload(payload, content)
+
+  var wd, _ = os.Getwd()
+
+  client := NewClient(
+    "gateway.sandbox.push.apple.com:2195",
+    wd + "/keys/apns-dev-cert.pem",
+    wd + "/keys/apns-dev-key-noenc.pem",
+  )
+  resp := client.Send(pn)
+
+  alert, _ := pn.PayloadString()
+
+  fmt.Println("  Alert:", alert)
+  fmt.Println("Success:", resp.Success)
+  fmt.Println("  Error:", resp.Error)
+  
 }

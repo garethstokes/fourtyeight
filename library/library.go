@@ -181,7 +181,7 @@ func (s * Library) UnlikePost(id string, position int, username string) * Docume
     fmt.Printf("unliking the main post\n")
     var mainPost = document.MainPost
 
-    var filteredLikedBy = make([]string, len(mainPost.LikedBy))
+    var filteredLikedBy = make([]string, 0)
 
     for _, value := range mainPost.LikedBy{
       if(value != username){
@@ -213,7 +213,7 @@ func (s * Library) UnlikePost(id string, position int, username string) * Docume
       fmt.Printf("if so\n")
       var post = document.Comments[position]
 
-      var filteredLikedBy = make([]string, len(post.LikedBy))
+      var filteredLikedBy = make([]string, 0)
 
       for _, value := range post.LikedBy{
         if(value != username){
@@ -271,16 +271,46 @@ func (s * Library) FindDocumentsFor(users []personal.Person, timestamp int) []Do
     return documents
 }
 
-func (s * Library) FindPublicDocuments(page int) []Document {
+func (s * Library) FindPublicDocuments(timestamp int) []Document {
 
     var result = make([]Document, 100)
 
-    err := s.collection.Find(bson.M{}).All(&result)
+    fmt.Printf("public documents: %d\n", timestamp)
+    
+    //public documents are any that we three created
+    var users = make([]string, 3)
+    users = append(users, "shredder")
+    users = append(users, "garrydanger")
+    users = append(users, "caveman")
+
+    var queries = make([]bson.M, len(users))
+    for i := range users {
+      queries[i] = bson.M{ "$and": []bson.M{
+                      bson.M{"mainpost.ownerid": users[i]},
+                      bson.M{"lastmodified": bson.M{ "$gt": timestamp }},
+                   }}
+    }
+
+    var query = bson.M{"$or": queries}
+
+    fmt.Printf("query: %s\n", query)
+
+    err := s.collection.Find(query).All(&result)
     if err != nil {
         panic(err)
     }
 
-    return result
+    documents := make([]Document, 0)
+    for _, d := range result {
+      if d.expired() {
+        continue
+      }
+
+      documents = append(documents, d)
+    }
+
+    fmt.Printf("documents: %d\n", len(documents))
+    return documents
 }
 
 func (s * Library) DeleteOne(id string) error {
