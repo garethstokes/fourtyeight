@@ -121,7 +121,55 @@ func PersonalController() {
     ok( ctx, users )
   })
 
+  web.Get("/user/(.+)/following/(.+)", func(ctx * web.Context, token string, username string) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    user := cache.Get("users", token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    profileUser, _ :=p.FindByName( username )
+    if profileUser == nil {
+      apiError( ctx, "User not found" )
+      return
+    }
+    
+    followers, _ := p.Following( profileUser )
+    ok( ctx, followers )
+  })
+
+  web.Get("/user/(.+)/followers/(.+)", func(ctx * web.Context, token string, username string) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    user := cache.Get("users", token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    profileUser, _ :=p.FindByName( username )
+    if profileUser == nil {
+      apiError( ctx, "User not found" )
+      return
+    }
+
+    following, _ := p.FollowersFor( profileUser )
+    ok( ctx, following )
+  })
+
+  //The above methods essentially render this one redundant
   web.Get("/user/(.+)/following", func(ctx * web.Context, token string) {
+
     ctx.SetHeader("Context-Type", "application/json", true)
 
     user := cache.Get("users", token )
@@ -138,6 +186,7 @@ func PersonalController() {
     ok( ctx, followers )
   })
 
+  //The above methods essentially render this one redundant
   web.Get("/user/(.+)/followers", func(ctx * web.Context, token string) {
     ctx.SetHeader("Context-Type", "application/json", true)
 
