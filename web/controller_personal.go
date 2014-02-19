@@ -8,7 +8,6 @@ import (
 	"github.com/garethstokes/fourtyeight/cache"
 	"github.com/garethstokes/fourtyeight/passwords"
 	"github.com/garethstokes/fourtyeight/mail"
-  "github.com/garethstokes/fourtyeight/push_notifications"
 )
 
 func WarmAuthCache(){
@@ -79,7 +78,14 @@ func PersonalController() {
 
     cache.Set("users", hash.Hash, user )
 
-    p.SaveLoginToken(user.Username, hash.Hash)
+    user.LoginToken = hash.Hash
+    
+    error = p.Update(user)
+    
+    if error != nil {
+      apiError( ctx, error.Error() )
+      return
+    }
 
     ok( ctx, map[string] interface{} {
       "token": hash.Hash,
@@ -117,7 +123,7 @@ func PersonalController() {
     p.OpenSession()
     defer p.CloseSession()
 
-    users, _ := p.AllUsers( )
+    users := p.FindAll()
     ok( ctx, users )
   })
 

@@ -42,6 +42,12 @@ func (s * Personal) FillCacheWithLoginTokens(){
   }
 }
 
+func (s * Personal) FindAll() ([]Person) {
+  var result = make([]Person, 0)
+  s.collection.Find(bson.M{}).All(&result)
+  return result
+}
+
 func (s * Personal) FindByToken(token string) (* Person, error) {
   return s.findBy("logintoken", token)
 }
@@ -52,10 +58,6 @@ func (s * Personal) FindByName( name string ) (* Person, error) {
 
 func (s * Personal) findBy(key string, val string) (* Person, error) {
   s.logf( "Personal.FindBy :: key: %s, value: %s", key, val)
-
-  if bson.IsObjectIdHex(key) == false {
-    return nil, errors.New("key wasn't a key")
-  }
 
   person := new( Person )
   err :=s.collection.Find(bson.M{key: val}).One( &person )

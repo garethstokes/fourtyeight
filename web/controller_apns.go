@@ -19,7 +19,7 @@ func WarmApnCache(){
 
 func registerDevice(user * personal.Person, deviceType int, deviceToken string) {
   // check if token is already in use
-  for p, v := range user.NotificationTokens {
+  for _, v := range user.NotificationTokens {
       if (v.Token == deviceToken) {
         return
       }
