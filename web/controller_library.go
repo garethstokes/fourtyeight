@@ -53,9 +53,7 @@ func LibraryController() {
     defer p.CloseSession()
 
     person := user.(* personal.Person)
-    followers, _ := p.Following(person)
-
-    posts := l.FindDocumentsFor(append(followers, * person), ts)
+    posts := l.FindDocumentsFor(append(person.Followers, person.Username), ts)
 
     ok( ctx, posts )
   })
@@ -140,15 +138,8 @@ func LibraryController() {
     personalStore.OpenSession()
     defer personalStore.CloseSession()
 
-    following, _ := personalStore.FollowersFor(person)
-
-    followerUsernames := make([]string, len(following))
-    for _, follower := range following {
-      followerUsernames = append(followerUsernames, follower.Username)
-    }
-
     documentId  := (document.Key.(bson.ObjectId)).Hex()
-    go push_notifications.SendPushNotificationAboutAPost(followerUsernames, person.Username + " just dropped", documentId)
+    go push_notifications.SendPushNotificationAboutAPost(person.Followers, person.Username + " just dropped", documentId)
 
     ok( ctx, document )
   })

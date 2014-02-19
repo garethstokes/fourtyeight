@@ -5,7 +5,6 @@ import (
   "labix.org/v2/mgo/bson"
   "time"
   "fmt"
-  "github.com/garethstokes/fourtyeight/personal"
 )
 
 /*
@@ -235,7 +234,7 @@ func (s * Library) UnlikePost(id string, position int, username string) * Docume
   return document
 }
 
-func (s * Library) FindDocumentsFor(users []personal.Person, timestamp int) []Document {
+func (s * Library) FindDocumentsFor(users []string, timestamp int) []Document {
 
     var result = make([]Document, 100)
 
@@ -244,7 +243,7 @@ func (s * Library) FindDocumentsFor(users []personal.Person, timestamp int) []Do
     var queries = make([]bson.M, len(users))
     for i := range users {
       queries[i] = bson.M{ "$and": []bson.M{
-                      bson.M{"mainpost.ownerid": users[i].Username},
+                      bson.M{"mainpost.ownerid": users[i]},
                       bson.M{"lastmodified": bson.M{ "$gt": timestamp }},
                    }}
     }
