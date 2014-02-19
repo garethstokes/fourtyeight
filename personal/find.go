@@ -50,7 +50,7 @@ func (s * Personal) FindByName( name string ) (* Person, error) {
   return s.findBy("username", name)
 }
 
-func (s * Personal) FindBy(key string, val string) (* Person, error) {
+func (s * Personal) findBy(key string, val string) (* Person, error) {
   s.logf( "Personal.FindBy :: key: %s, value: %s", key, val)
 
   if bson.IsObjectIdHex(key) == false {

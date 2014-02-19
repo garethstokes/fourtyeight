@@ -1,25 +1,28 @@
 package personal
 
 import (
-  "labix.org/v2/mgo"
-  "labix.org/v2/mgo/bson"
   "fmt"
+  "labix.org/v2/mgo/bson"
   "github.com/garethstokes/fourtyeight/cache"
 )
 
-const int ANDROID=0
-const int IOS=1
- 
+var (
+  ANDROID   = 0
+  IOS       = 1
+)
+
 func (s * Personal) FillCacheWithNotificationTokens() {
   var result = make([]Person, 0)
-  var count := 0;
+  var count = 0
 
-  for _, p := range s.collection.Find(bson.M{}).All(&result) {
+  s.collection.Find(bson.M{}).All(&result)
+
+  for _, p := range result {
     for _, apn := range p.NotificationTokens {
-      if(deviceType == IOS){
-        cache.Set("apns", p.Username, apn.Token) 
+      if(apn.Platform == IOS){
+        cache.Set("apns", p.Username, apn.Token)
       }else{
-        cache.Set("apns_android", p.Username, apn.Token) 
+        cache.Set("apns_android", p.Username, apn.Token)
       }
       count++
     }
@@ -37,7 +40,7 @@ func (s * Personal) FillCacheWithNotificationTokens() {
 // }
 
 // func (s * Personal) RegisterDevice(username string, token string, deviceType int) error {
-  
+
 //   s.UnRegisterDevice(token)
 
 //   sql := "INSERT INTO pushNotificationRegister ( username, token, deviceType, date_created ) VALUES ( ?, ?, ?, NOW() );"

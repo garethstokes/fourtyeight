@@ -6,11 +6,6 @@ import (
   "fmt"
 )
 
-var (
-  validate_db_columns = "password, salt, iterations"
-  validate_db_predicate = fmt.Sprintf( "user_id = ? limit 1" )
-)
-
 type PersonValidateError struct {
   When time.Time
   What string
@@ -22,29 +17,14 @@ func (e PersonValidateError) Error() string {
 
 func (s * Personal) Validate( username string, password string ) (* Person, error) {
   s.logf( "Personal.Validate( '%s', '%s' )", username, password )
-  var iterations int
-  var hash, salt string
 
   person, error := s.FindByName( username )
   if error != nil {
     return nil, error
   }
 
-  sql := fmt.Sprintf(
-    "SELECT %s FROM user WHERE %s",
-    validate_db_columns,
-    validate_db_predicate)
-
-  row := s.db.QueryRow( sql, person.id )
-  error = row.Scan( &hash, &salt, &iterations )
-
-  if error != nil {
-    s.error( error.Error() )
-    return nil, error
-  }
-
-  auth := passwords.ComputeWithSalt( password, iterations, salt )
-  if auth.Hash != hash {
+  auth := passwords.ComputeWithSalt( password, person.Iterations, person.Salt )
+  if auth.Hash != person.Password {
     e := PersonValidateError {
 		  time.Now(),
 		  "Incorrect password",

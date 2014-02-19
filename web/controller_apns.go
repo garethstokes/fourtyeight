@@ -13,17 +13,33 @@ func WarmApnCache(){
     p := personal.Store()
     p.OpenSession()
     defer p.CloseSession()
-    
-    p.FillCacheWithNotificationTokens()
 
+    p.FillCacheWithNotificationTokens()
+}
+
+func registerDevice(user * personal.Person, deviceType int, deviceToken string) {
+  // check if token is already in use
+  for p, v := range user.NotificationTokens {
+      if (v.Token == deviceToken) {
+        return
+      }
+  }
+
+  token := personal.NotificationToken{
+    deviceType,
+    deviceToken,
+  }
+
+  user.NotificationTokens = append(user.NotificationTokens, token)
 }
 
 func ApnsController() {
 
+
   // register a client for push notifications
   type ApnsRegisterParams struct {
     Token string
-    DeviceToken string 
+    DeviceToken string
   }
 
   web.Post("/apns/register", func(ctx * web.Context) {
@@ -54,7 +70,7 @@ func ApnsController() {
     p := personal.Store()
     p.OpenSession()
     defer p.CloseSession()
-    
+
     user, error := p.GetLoggedInUser(params.Token)
 
     if error != nil {
@@ -67,17 +83,8 @@ func ApnsController() {
 
     //put it in the cache i guess
     cache.Set("apns", user.Username, params.DeviceToken)
-    
-    //put it in the database is better
-    error = p.RegisteriOSDevice(user.Username, params.DeviceToken)
 
-    if error != nil {
-      apiError( ctx, "INVALID_TOKEN" )
-      fmt.Println("INVALID_USER_TOKEN - failed to store the device token for apns")
-
-      return
-    }
-
+    registerDevice(user, personal.IOS, params.DeviceToken)
     ok( ctx, params.DeviceToken )
   })
 
@@ -98,7 +105,7 @@ func ApnsController() {
     p := personal.Store()
     p.OpenSession()
     defer p.CloseSession()
-    
+
     user, error := p.GetLoggedInUser(params.Token)
 
     if error != nil {
@@ -111,17 +118,10 @@ func ApnsController() {
 
     //put it in the cache i guess
     cache.Set("apns_android", user.Username, params.DeviceToken)
-    
+
     //put it in the database is better
-    error = p.RegisterAndroidDevice(user.Username, params.DeviceToken)
 
-    if error != nil {
-      apiError( ctx, "INVALID_TOKEN" )
-      fmt.Println("INVALID_USER_TOKEN - failed to store the device token for apns")
-
-      return
-    }
-
+    registerDevice(user, personal.IOS, params.DeviceToken)
     ok( ctx, params.DeviceToken )
   })
 }

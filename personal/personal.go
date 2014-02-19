@@ -1,6 +1,5 @@
 package personal
 
-import "database/sql"
 import "fmt"
 import "labix.org/v2/mgo"
 
@@ -76,7 +75,7 @@ func (s * Personal) OpenSession() {
 
 func (s * Personal) CloseSession() {
   s.log("Personal.CloseSession")
-  s.db.Close()
+  s.session.Close()
 }
 
 
@@ -99,6 +98,7 @@ func (s * Personal) error(message string) {
   fmt.Printf("ERROR: %s\n", message)
 }
 
+/*
 func (s * Personal) SaveToWaitingList(email string) error {
   sql := "INSERT INTO waitinglist ( email, date_created ) VALUES ( ?, NOW() );"
   statement, error := s.db.Prepare( sql )
@@ -185,3 +185,5 @@ func (s * Personal) AllUsers() ([]Person, error) {
 
   return followers, nil
 }
+
+*/
