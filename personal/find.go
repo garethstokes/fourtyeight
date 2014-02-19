@@ -1,142 +1,71 @@
 package personal
 
 import (
+  "labix.org/v2/mgo/bson"
   "fmt"
   "errors"
-  "database/sql"
   "github.com/garethstokes/fourtyeight/cache"
 )
 
 var (
-  db_columns = "user_id, username, email, avatar_url, loginToken, date_created"
-  db_predicate_token = fmt.Sprintf( "loginToken = ? limit 1" )
-  db_predicate = fmt.Sprintf( "username = ? limit 1" )
-)
 
+  //   var queries = make([]bson.M, len(users))
+  //   for i := range users {
+  //     queries[i] = bson.M{ "$and": []bson.M{
+  //                     bson.M{"mainpost.ownerid": users[i].Username},
+  //                     bson.M{"lastmodified": bson.M{ "$gt": timestamp }},
+  //                  }}
+  //   }
+  // db_columns = "user_id, username, email, avatar_url, loginToken, date_created"
+  // db_predicate_token = fmt.Sprintf( "loginToken = ? limit 1" )
+  // db_predicate = fmt.Sprintf( "username = ? limit 1" )
+)
 
 func (s * Personal) FillCacheWithLoginTokens(){
 
   s.logf( "personal.FillCacheWithLoginTokens" )
 
-  sql := fmt.Sprintf(
-    "SELECT %s FROM user WHERE loginToken <> '' ",
-    db_columns)
+  var result = make([]Person, 0)
+  
+  query := bson.M{"logintoken": bson.M{ "$ne": "" }}
 
-  rows, err := s.db.Query(sql)
-
+  err := s.collection.Find(query).All(&result)
+  
   if err != nil {
-    s.log(err.Error())
+      panic(err)
   }
 
-  var count int
-  count = 0 
+  fmt.Printf("Warming cache with this many tokens: %d\n", len(result))
   
-  var user_id int
-  var username, email, avatar_url, loginToken string
-  var date_created int64
-
-  for rows.Next() {
-    count++
-
-    error := rows.Scan( &user_id, &username, &email, &avatar_url, &loginToken, &date_created )
-
-    if error != nil {
-      s.error( error.Error() )
-      return 
-    }
-
-    person := new( Person )
-    person.id = user_id
-    person.Username = username
-    person.Email = email
-    person.AvatarUrl = avatar_url
-    person.DateCreated = date_created
-    person.LoginToken = loginToken
-    
-    cache.Set("users", loginToken, person) 
-    
+  for _, p := range result {
+    cache.Set("users", p.LoginToken, p) 
   }
-  
-  fmt.Printf("Populated cache with %d login tokens \n", count)
-  
-  if err := rows.Err(); err != nil {
-    s.log(err.Error())
-  }
-
 }
-
-
-
- 
-
 
 func (s * Personal) FindByToken(token string) (* Person, error) {
-  
-  s.logf( "personal.FindByToken :: %s", token )
-
-  sql := fmt.Sprintf(
-    "SELECT %s FROM user WHERE %s",
-    db_columns,
-    db_predicate_token)
-
-  return s.txFindBySql(sql, token, nil)
+  return s.findBy("logintoken", token)
 }
-
-
-
-
 
 func (s * Personal) FindByName( name string ) (* Person, error) {
-  return s.txFindByName( name, nil )
+  return s.findBy("username", name)
 }
 
-func (s * Personal) txFindByName( name string, tx * sql.Tx ) (* Person, error) {
+func (s * Personal) FindBy(key string, val string) (* Person, error) {
+  s.logf( "Personal.FindBy :: key: %s, value: %s", key, val)
 
-  s.logf( "personal.FindByName :: %s", name )
-
-  sql := fmt.Sprintf(
-    "SELECT %s FROM user WHERE %s",
-    db_columns,
-    db_predicate)
-
-  return s.txFindBySql(sql, name, tx)
-
-}
-
-
-
-
-
-func (s * Personal) txFindBySql( sqlStr string, sqlParam string, tx * sql.Tx ) (* Person, error) {
-  var user_id int
-  var username, email, avatar_url, loginToken string
-  var date_created int64
-  var row * sql.Row
-
-  if tx == nil {
-    row = s.db.QueryRow( sqlStr, sqlParam )
-  } else {
-    row = tx.QueryRow( sqlStr, sqlParam )
-  }
-
-  error := row.Scan( &user_id, &username, &email, &avatar_url, &loginToken, &date_created )
-
-  if error != nil {
-    s.error( error.Error() )
-    return nil, error
+  if bson.IsObjectIdHex(key) == false {
+    return nil, errors.New("key wasn't a key")
   }
 
   person := new( Person )
-  person.id = user_id
-  person.Username = username
-  person.Email = email
-  person.AvatarUrl = avatar_url
-  person.DateCreated = date_created
-  person.LoginToken = loginToken
+  err :=s.collection.Find(bson.M{key: val}).One( &person )
+  if err != nil {
+    fmt.Printf( "ERROR: %s\n", err.Error())
+    return nil, err
+  }
 
   return person, nil
 }
-
 
 func (s * Personal) GetLoggedInUser(loginToken string)(* Person, error) {
     

@@ -1,136 +1,89 @@
 package personal
 
-// import "database/sql"
-import _ "github.com/go-sql-driver/mysql"
-import "fmt"
-import "github.com/garethstokes/fourtyeight/cache"
+import (
+  "labix.org/v2/mgo"
+  "labix.org/v2/mgo/bson"
+  "fmt"
+  "github.com/garethstokes/fourtyeight/cache"
+)
 
-func (s * Personal) FindAndroidTokens(username string) ([]string) {
-  return s.FindTokens(username, 0)
-}
-
-func (s * Personal) FindiOSTokens(username string)  ([]string){
- return s.FindTokens(username, 1) 
-}
-
+const int ANDROID=0
+const int IOS=1
+ 
 func (s * Personal) FillCacheWithNotificationTokens() {
+  var result = make([]Person, 0)
+  var count := 0;
 
-  rows, err := s.db.Query("SELECT username, token, deviceType FROM pushNotificationRegister")
-
-  if err != nil {
-    s.log(err.Error())
-  }
-  
-  var deviceType, count int
-  count = 0
-  var token, username string
-  
-  for rows.Next() {
-    count++
-
-    if err := rows.Scan(&username, &token, &deviceType); err != nil {
-      s.log(err.Error())
-    }
-    if(deviceType == 1){
-      cache.Set("apns", username, token) 
-    }else{
-      cache.Set("apns_android", username, token)
+  for _, p := range s.collection.Find(bson.M{}).All(&result) {
+    for _, apn := range p.NotificationTokens {
+      if(deviceType == IOS){
+        cache.Set("apns", p.Username, apn.Token) 
+      }else{
+        cache.Set("apns_android", p.Username, apn.Token) 
+      }
+      count++
     }
   }
-  
+
   fmt.Printf("Populated cache with %d deviceTokens \n", count)
-  
-  if err := rows.Err(); err != nil {
-    s.log(err.Error())
-  }
-
-  return 
 }
 
-func (s * Personal) FindTokens(username string, deviceType int) ([]string) {
+// func (s * Personal) RegisterAndroidDevice(username string, token string) error {
+//   return s.RegisterDevice(username, token, 0)
+// }
+
+// func (s * Personal) RegisteriOSDevice(username string, token string) error {
+//   return s.RegisterDevice(username, token, 1)
+// }
+
+// func (s * Personal) RegisterDevice(username string, token string, deviceType int) error {
   
-  tokens := make([]string, 2)
+//   s.UnRegisterDevice(token)
+
+//   sql := "INSERT INTO pushNotificationRegister ( username, token, deviceType, date_created ) VALUES ( ?, ?, ?, NOW() );"
   
-  rows, err := s.db.Query("SELECT token FROM pushNotificationRegister WHERE username=? AND deviceType=?", username, deviceType)
+//   statement, error := s.db.Prepare( sql )
+//   if error != nil {
+//     s.error( error.Error() )
+//     return error
+//   }
+//   defer statement.Close()
 
-  if err != nil {
-    s.log(err.Error())
-  }
+//   s.log(sql)
 
-  for rows.Next() {
-    var token string
-    if err := rows.Scan(&token); err != nil {
-      s.log(err.Error())
-    }
+//   _, error = statement.Exec( username, token, deviceType )
 
-    tokens = append( tokens, token )
-   
-    fmt.Printf("%s token found for %d\n", token, username)
-  }
+//   if error != nil {
+//     s.error( error.Error() )
+//     return error
+//   }
 
-  if err := rows.Err(); err != nil {
-    s.log(err.Error())
-  }
+//   return nil
+// }
+
+// func (s * Personal) UnRegisterDevice(token string) error{
+//   //remove from cache first
+//   //WARNING assuming that there is never going to be an android token that is the same as the ios token... safe assumption right? LIke the song...
+//   cache.Remove("apns_android", token)
+//   cache.Remove("apns", token)
+
+//   sql := "DELETE FROM pushNotificationRegister where token =?;"
   
-  return tokens
-}
+//   statement, error := s.db.Prepare( sql )
+//   if error != nil {
+//     s.error( error.Error() )
+//     return error
+//   }
+//   defer statement.Close()
 
-func (s * Personal) RegisterAndroidDevice(username string, token string) error {
-  return s.RegisterDevice(username, token, 0)
-}
+//   s.log(sql)
 
-func (s * Personal) RegisteriOSDevice(username string, token string) error {
-  return s.RegisterDevice(username, token, 1)
-}
+//   _, error = statement.Exec(token)
 
-func (s * Personal) RegisterDevice(username string, token string, deviceType int) error {
-  
-  s.UnRegisterDevice(token)
+//   if error != nil {
+//     s.error( error.Error() )
+//     return error
+//   }
 
-  sql := "INSERT INTO pushNotificationRegister ( username, token, deviceType, date_created ) VALUES ( ?, ?, ?, NOW() );"
-  
-  statement, error := s.db.Prepare( sql )
-  if error != nil {
-    s.error( error.Error() )
-    return error
-  }
-  defer statement.Close()
-
-  s.log(sql)
-
-  _, error = statement.Exec( username, token, deviceType )
-
-  if error != nil {
-    s.error( error.Error() )
-    return error
-  }
-
-  return nil
-}
-
-func (s * Personal) UnRegisterDevice(token string) error{
-  //remove from cache first
-  //WARNING assuming that there is never going to be an android token that is the same as the ios token... safe assumption right? LIke the song...
-  cache.Remove("apns_android", token)
-  cache.Remove("apns", token)
-
-  sql := "DELETE FROM pushNotificationRegister where token =?;"
-  
-  statement, error := s.db.Prepare( sql )
-  if error != nil {
-    s.error( error.Error() )
-    return error
-  }
-  defer statement.Close()
-
-  s.log(sql)
-
-  _, error = statement.Exec(token)
-
-  if error != nil {
-    s.error( error.Error() )
-    return error
-  }
-
-  return nil
-}
+//   return nil
+// }

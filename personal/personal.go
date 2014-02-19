@@ -1,18 +1,28 @@
 package personal
 
 import "database/sql"
-import _ "github.com/go-sql-driver/mysql"
 import "fmt"
+import "labix.org/v2/mgo"
 
 // the backticks are field tags that let
 // the json parser know what to name the fields
+
+type NotificationToken struct {
+  Platform int
+  Token string
+}
+
 type Person struct {
-  id int
+  PersonAuthorisation
+  Key interface{} `json:"key"`
   Username string `json:"name"`
   Email string `json:"email"`
   AvatarUrl string `json:"avatarUrl"`
   LoginToken string `json:"-"`
   DateCreated int64 `json:"dateCreated"`
+  Followers []string `json:"followers"`
+  Following []string `json:"following"`
+  NotificationTokens []NotificationToken `json:"-"`
 }
 
 func (p * Person) Validate() []string {
@@ -29,13 +39,14 @@ func (p * Person) Validate() []string {
 }
 
 type PersonAuthorisation struct {
-  Password string
-  Salt string
-  Iterations int
+  Password string `json:"-"`
+  Salt string `json:"-"`
+  Iterations int `json:"-"`
 }
 
 type Personal struct {
-  db * sql.DB
+  session * mgo.Session
+  collection * mgo.Collection
   Schema string
 }
 
@@ -45,20 +56,22 @@ func Store() * Personal {
 }
 
 func (s * Personal) OpenSession() {
-  //db, err := sql.Open("mysql", "user:password@/dbname")
-  if len( s.Schema ) == 0 {
-    s.Schema = "fourtyeight_development"
-  }
+  fmt.Print( "Personal.OpenSession\n" )
 
-  connectionString := fmt.Sprintf( "root@/%s?parseTime=true", s.Schema )
-  db, err := sql.Open("mysql", connectionString )
-  if err != nil {
-    s.error( err.Error() )
-  }
+    session, err := mgo.Dial("localhost")
+    if err != nil {
+        panic(err)
+    }
 
-  s.db = db
+    // Optional. Switch the session to a monotonic behavior.
+    session.SetMode(mgo.Monotonic, true)
 
-  s.logf( "Personal Schema :: %s", s.Schema )
+    if len( s.Schema ) == 0 {
+      s.Schema = "fourtyeight_development"
+    }
+
+    s.session = session
+    s.collection = session.DB(s.Schema).C("personal")
 }
 
 func (s * Personal) CloseSession() {
@@ -66,17 +79,11 @@ func (s * Personal) CloseSession() {
   s.db.Close()
 }
 
-func (s * Personal) run(sql string) {
-  statement, error := s.db.Prepare( sql )
-  if error != nil {
-    panic( error )
-  }
-  defer statement.Close()
 
-  _, error = statement.Exec()
-  if error != nil {
-    s.error( error.Error() )
-  }
+func (s * Personal) DestroyCollectionAndCloseSession() {
+  fmt.Print( "Personal.DestroyCollectionAndCloseSession\n" )
+  s.collection.DropCollection()
+  s.session.Close()
 }
 
 func (s * Personal) log(message string) {
@@ -90,51 +97,6 @@ func (s * Personal) logf(message string, args ...interface{}) {
 
 func (s * Personal) error(message string) {
   fmt.Printf("ERROR: %s\n", message)
-}
-
-func (s * Personal) createTable(name string, sql string) {
-  s.logf( "Initialising Schema :: creating table %s", name )
-  s.run( sql )
-  s.run( fmt.Sprintf("INSERT INTO db_schema ( name, date_created ) VALUES ( '%s', NOW() );", name ))
-}
-
-func (s * Personal) InitialiseSchema() {
-  sql := "SELECT table_name FROM information_schema.tables WHERE table_schema = ? AND table_name = 'schema';"
-
-  result, err := s.db.Exec( sql, s.Schema )
-  if err != nil {
-    panic( err.Error() )
-  }
-
-  rows, _ := result.RowsAffected()
-  fmt.Printf( "number of rows: %d\n", rows )
-
-  if rows == 0 {
-    s.logf( "Initialising Schema :: %s", s.Schema )
-    s.run( "CREATE TABLE db_schema ( table_id INT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255), date_created TIMESTAMP );" )
-
-    var sql string
-    sql = "CREATE TABLE user ( user_id INT(11) PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL UNIQUE, email VARCHAR(255) NOT NULL UNIQUE, avatar_url VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255) NOT NULL, loginToken VARCHAR(255) NOT NULL, iterations INT, date_created BIGINT NOT NULL);"
-    s.createTable( "user", sql );
-
-    sql = "CREATE TABLE follower (user_id INT(11) NOT NULL, follower_id INT(11) NOT NULL, CONSTRAINT `fk_follower_user_id` FOREIGN KEY (`user_id`) REFERENCES `user` (`user_id`), CONSTRAINT `fk_follower_follower_id` FOREIGN KEY (`follower_id`) REFERENCES `user` (`user_id`), UNIQUE KEY `unique_followers` (`user_id`, `follower_id`));"
-    s.createTable( "follower", sql )
-
-    sql = "CREATE TABLE IF NOT EXISTS waitinglist ( id INT(11) PRIMARY KEY AUTO_INCREMENT, email VARCHAR(255) NOT NULL, date_created TIMESTAMP );"
-    s.createTable( "waitinglist", sql )
- 
-    sql = "CREATE TABLE IF NOT EXISTS pushNotificationRegister ( id INT(11) PRIMARY KEY AUTO_INCREMENT, username VARCHAR(255) NOT NULL, token VARCHAR(255) NOT NULL, deviceType INT(11) NOT NULL, date_created TIMESTAMP );"
-    s.createTable( "pushNotificationRegister", sql )
-  }
-}
-
-func (s * Personal) DropSchema() {
-  s.log( "Personal.DropSchema" )
-
-  s.run("DROP TABLE db_schema;");
-  s.run("DROP TABLE follower;");
-  s.run("DROP TABLE user;");
-  s.run("DROP TABLE pushNotificationRegister;");
 }
 
 func (s * Personal) SaveToWaitingList(email string) error {
@@ -158,7 +120,7 @@ func (s * Personal) SaveToWaitingList(email string) error {
   return nil
 }
 
-func (s * Personal) SaveLoginToken (username string, token string) error{
+func (s * Personal) SaveLoginToken(username string, token string) error{
   
   sql := "UPDATE user SET loginToken = ? WHERE username=?;"
   

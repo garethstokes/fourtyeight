@@ -3,37 +3,29 @@ package personal
 import (
   "github.com/garethstokes/fourtyeight/passwords"
   "time"
+  "labix.org/v2/mgo/bson"
+  "fmt"
 )
 
 func (s * Personal) Create( person * Person, password string ) (* Person, error) {
-  sql := "INSERT INTO user ( username, email, avatar_url, password, salt, iterations, date_created ) VALUES ( ?, ?, ?, ?, ?, ?, ? );"
-  statement, error := s.db.Prepare( sql )
-  if error != nil {
-    panic( error )
-  }
-  defer statement.Close()
+ 
+  fmt.Printf( "Personal.Create :: %@\n", person )
+  
+  key := bson.NewObjectId()
 
-  s.log(sql)
+  person.Key = key
 
   pass := passwords.Compute( password )
+  
+  person.Password = pass.Hash
+  person.Salt = pass.Salt
+  person.Iterations = pass.Iterations
 
-  auth := new(PersonAuthorisation)
-  auth.Password = pass.Hash
-  auth.Salt = pass.Salt
-  auth.Iterations = pass.Iterations
+  person.DateCreated = time.Now().UTC().Unix()
 
-  _, error = statement.Exec(
-    person.Username,
-    person.Email,
-    person.AvatarUrl,
-    auth.Password,
-    auth.Salt,
-    auth.Iterations,
-    time.Now().UTC().Unix())
-
-  if error != nil {
-    s.error( error.Error() )
-    return nil, error
+  err := s.collection.Insert(person)
+  if err != nil {
+    panic(err)
   }
 
   return person, nil

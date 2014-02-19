@@ -10,13 +10,11 @@ func main() {
   schema := "fourtyeight_development"
   fmt.Printf( "Dropping database :: %s\n", schema )
 
-  p := personal.Store()
-  p.OpenSession()
-  defer p.CloseSession()
-
-  p.DropSchema()
-
   l := library.Store()
   l.OpenSession()
   l.DestroyCollectionAndCloseSession()
+
+  p := personal.Store()
+  p.OpenSession()
+  p.DestroyCollectionAndCloseSession()
 }
