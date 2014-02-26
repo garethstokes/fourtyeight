@@ -189,4 +189,114 @@ func PersonalController() {
     })
   })
 
+  web.Post("/user/(.+)/follow/(.+)", func(ctx * web.Context, token string, toFollow string) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    user := cache.Get("users", token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    personToFollow, _ := p.FindByName( toFollow )
+    if personToFollow == nil {
+      apiError( ctx, "Invalid follow username." )
+      return
+    }
+
+    person := user.(* personal.Person)
+
+    //Add to target Followers list
+    fmt.Printf("%@ wants to follow %@\n", person.Username, toFollow)
+
+    found := false
+
+    for _, v := range personToFollow.Followers {
+      if (v == person.Username) { 
+        fmt.Printf("%@ is already a follower of %@\n", person.Username, toFollow)
+        found = true
+      }
+    }
+    
+    if(!found){
+      personToFollow.Followers = append(personToFollow.Followers, person.Username)
+      p.Update(personToFollow)
+    }
+
+    //reset flag
+    found = false
+
+    //Add to target Following list
+    for _, v := range person.Following {
+      if (v == toFollow) {
+        //already following
+        fmt.Printf("%@ is already following %@\n", person.Username, toFollow)
+        found = true
+      }
+    }
+    
+    if(!found){
+      person.Following = append(person.Following, toFollow)  
+      p.Update(person)
+    }
+    
+    ok( ctx, map[string] interface{} {
+      "user": person,
+    })
+
+  })
+
+  web.Post("/user/(.+)/unfollow/(.+)", func(ctx * web.Context, token string, toFollow string) {
+    ctx.SetHeader("Context-Type", "application/json", true)
+
+    user := cache.Get("users", token )
+    if user == nil {
+      apiError( ctx, "Invalid token" )
+      return
+    }
+
+    p := personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    personToFollow, _ := p.FindByName( toFollow )
+    if personToFollow == nil {
+      apiError( ctx, "Invalid follow username." )
+      return
+    }
+
+    person := user.(* personal.Person)
+
+    //Remove from target Followers list
+    fmt.Printf("%@ wants to unfollow %@\n", person.Username, toFollow)
+
+    //target
+    followers := make([]string, 0)
+    for _, v := range personToFollow.Followers {
+      if (v != person.Username) { 
+          followers = append(followers, v)
+      }
+    }
+    personToFollow.Followers = followers
+    p.Update(personToFollow)
+    
+    //source
+    following := make([]string, 0)
+    for _, v := range person.Following {
+      if (v != toFollow) {
+        following = append(following, v)
+      }
+    }
+    person.Following = following  
+    p.Update(person)
+    
+    ok( ctx, map[string] interface{} {
+      "user": person,
+    })
+
+  })
 }
