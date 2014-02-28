@@ -40,6 +40,16 @@ func PersonalController() {
     ok( ctx, person )
   })
 
+  web.Get("/user/search/([A-Za-z0-9]+)", func(ctx * web.Context, val string) {
+    p:= personal.Store()
+    p.OpenSession()
+    defer p.CloseSession()
+
+    persons := p.FindByString( val )
+    
+    ok( ctx, persons )
+  })
+
   // POST Validate user creds
   // Example: /user/validate
   //

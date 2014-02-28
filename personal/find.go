@@ -11,9 +11,9 @@ var (
 
   //   var queries = make([]bson.M, len(users))
   //   for i := range users {
-  //     queries[i] = bson.M{ "$and": []bson.M{
-  //                     bson.M{"mainpost.ownerid": users[i].Username},
-  //                     bson.M{"lastmodified": bson.M{ "$gt": timestamp }},
+  //     queries[i] = bson.M{ "$or": []bson.M{
+  //                     bson.M{"username": bson.M{ "$regex": val }},
+  //                     bson.M{"email": bson.M{ "$regex": val }},
   //                  }}
   //   }
   // db_columns = "user_id, username, email, avatar_url, loginToken, date_created"
@@ -42,6 +42,29 @@ func (s * Personal) FillCacheWithLoginTokens(){
   }
 }
 
+func (s * Personal) FindByString(val string) ([]Person){
+  //This query could be better, 
+  // + email search shoud only search chars BEFORE the @
+  // + limit results to 100
+  // + favour results that start with 'val' - this might involve doing 3 searchs?
+  //TODO get a regex dungeon master to write a sick regex bra
+
+  query := bson.M { "$or": []bson.M {
+                                      bson.M{"username": bson.M{ "$regex": val }},
+                                      bson.M{"email": bson.M{ "$regex": val }},
+                                    }}
+
+  s.logf( "Personal.FindByString :: value: %s", val)
+
+  persons := make([]Person, 0)
+  err :=s.collection.Find(query).All( &persons )
+  if err != nil {
+    fmt.Printf( "ERROR: %s\n", err.Error())
+  }
+
+  return persons
+}
+
 func (s * Personal) FindAll() ([]Person) {
   var result = make([]Person, 0)
   s.collection.Find(bson.M{}).All(&result)
@@ -68,6 +91,7 @@ func (s * Personal) findBy(key string, val string) (* Person, error) {
 
   return person, nil
 }
+
 
 func (s * Personal) GetLoggedInUser(loginToken string)(* Person, error) {
     
