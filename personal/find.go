@@ -24,21 +24,17 @@ var (
 func (s * Personal) FillCacheWithLoginTokens(){
 
   s.logf( "personal.FillCacheWithLoginTokens" )
-
   var result = make([]Person, 0)
-  
   query := bson.M{"logintoken": bson.M{ "$ne": "" }}
 
   err := s.collection.Find(query).All(&result)
-  
   if err != nil {
       panic(err)
   }
 
   fmt.Printf("Warming cache with this many tokens: %d\n", len(result))
-  
   for _, p := range result {
-    cache.Set("users", p.LoginToken, p) 
+    cache.Set("users", p.LoginToken, & p)
   }
 }
 
